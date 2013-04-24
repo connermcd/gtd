@@ -1,0 +1,102 @@
+#!/bin/bash
+
+set -e
+
+# configuration
+
+CUSTOM_CMD="clear"
+MPD_CMD="mpc -q toggle"
+
+NOTIFY_CMD="notify-send"
+NOTIFY_WORK="\"Get things done.\""
+NOTIFY_BREAK="\"Take a break.\""
+
+SPEAK_CMD="&>/dev/null espeak"
+SPEAK_WORK="$NOTIFY_WORK"
+SPEAK_BREAK="$NOTIFY_BREAK"
+
+# flag defaults
+
+START_WITH_BREAK=false
+DO_CUSTOM=false
+DO_MPD=true
+DO_NOTIFY=true
+DO_SPEAK=false
+
+usage() {
+cat << EOF
+USAGE:
+
+   gtd [ -bcmns ] [# of minutes]
+
+OPTIONS:
+
+   -b : start on a break
+   -c : custom command (defaults to "clear")
+   -m : toggle MPD on change
+   -n : notify on change
+   -s : speak command
+
+EOF
+}
+
+total_working_time=0
+num_breaks=0
+
+while getopts "bcmnsh?" opt; do
+   case $opt in
+      b) if $START_WITH_BREAK; then START_WITH_BREAK=false; else START_WITH_BREAK=true; fi;;
+      c) if $DO_CUSTOM; then DO_CUSTOM=false; else DO_CUSTOM=true; fi;;
+      m) if $DO_MPD; then DO_MPD=false; else DO_MPD=true; fi;;
+      n) if $DO_NOTIFY; then DO_NOTIFY=false; else DO_NOTIFY=true; fi;;
+      s) if $DO_SPEAK; then DO_SPEAK=false; else DO_SPEAK=true; fi;;
+      *) usage; exit 1;;
+   esac
+done
+shift $((OPTIND-1))
+if [ -z "$1" -o ! -z "${1##[0-9]*}" ]; then usage; exit 1; fi
+
+hms() {
+   local S=$1
+   ((h=S/3600))
+   ((m=S%3600/60))
+   ((s=S%60))
+   printf "%02d:%02d:%02d\n" $h $m $s
+}
+
+vsleep() {
+   later=$(date --date "now +$1 seconds" +%s)
+   while [ $(date +%s) -lt $later ]; do
+      left=$(( $later - $(date +%s) ))
+      hms=$(hms $left)
+      echo -e "$hms $(tput el)\r\c"
+      sleep 1
+   done
+}
+
+do_options() {
+   if $DO_MPD; then eval "$MPD_CMD"; fi
+   if $DO_CUSTOM; then eval "$CUSTOM_CMD"; fi
+   if $DO_NOTIFY && $1; then eval "$NOTIFY_CMD $NOTIFY_BREAK";
+   elif $DO_NOTIFY; then eval "$NOTIFY_CMD $NOTIFY_WORK"; fi
+   if $DO_SPEAK && $1; then eval "$SPEAK_CMD $SPEAK_BREAK";
+   elif $DO_SPEAK; then eval "$SPEAK_CMD $SPEAK_WORK"; fi
+}
+
+WORK_LENGTH=$1
+BREAK_LENGTH=$(( $1 / 5 ))
+clear && echo "$WORK_LENGTH minute sessions with $BREAK_LENGTH minute breaks."
+
+while true; do
+   if $START_WITH_BREAK; then
+      do_options true
+      vsleep $(( $BREAK_LENGTH * 60 ))
+   else START_WITH_BREAK=true; fi
+   do_options false
+   vsleep $(( $WORK_LENGTH * 60 ))
+   total_working_time=$(hms $(( ($total_working_time + $WORK_LENGTH) * 60 )))
+   num_breaks=$(( $num_breaks + 1 ))
+   echo -e "Break #$num_breaks. Total working time: $total_working_time"
+done
+
+exit 0
