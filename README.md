@@ -11,11 +11,11 @@
 
 ## Usage
 
-> gtd [ -bcmns ] [# of minutes]
+    gtd [ -bcmns ] [# of minutes]
 
 Basically it loops infinitely between periods of work and breaks. For example...
 
-> gtd -s 25
+    gtd -s 25
 
 Will start a loop with 25 minute periods of work separated by 5 minute breaks. If you give it the `-b` flag then it starts on a break instead of a working period.
 
