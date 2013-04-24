@@ -94,9 +94,9 @@ while true; do
    else START_WITH_BREAK=true; fi
    do_options false
    vsleep $(( $WORK_LENGTH * 60 ))
-   total_working_time=$(hms $(( ($total_working_time + $WORK_LENGTH) * 60 )))
+   total_working_time=$(( ($total_working_time + $WORK_LENGTH) ))
    num_breaks=$(( $num_breaks + 1 ))
-   echo -e "Break #$num_breaks. Total working time: $total_working_time"
+   echo -e "Break #$num_breaks. Total working time: $(hms $(( $total_working_time * 60 )))"
 done
 
 exit 0
