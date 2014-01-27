@@ -8,10 +8,11 @@
     -m : toggle MPD on change
     -n : notify on change
     -s : speak command
+    -t : show time in tmux status bar
 
 ## Usage
 
-    gtd [ -bcmns ] [# of minutes]
+    gtd [ -bcmnst ] [ work length ] [ break length ]
 
 Basically it loops infinitely between periods of work and breaks. For example...
 
@@ -19,9 +20,13 @@ Basically it loops infinitely between periods of work and breaks. For example...
 
 Will start a loop with 25 minute periods of work separated by 5 minute breaks. If you give it the `-b` flag then it starts on a break instead of a working period.
 
-The `-m` and `-n` flags are enabled by default. They use `mpc toggle` to toggle your mpd client and libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes. You can configure all of this within the script.
+The `-m`, `-n`, `-s` and `-t` flags are enabled by default. They use `mpc toggle` to toggle your mpd client and libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes, and the `-t` flag refreshes tmux and updates `/tmp/gtd` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
 
-The script automatically determines how long breaks should be depending on how long you want your working periods to be. I usually use either 25 or 15 minute working periods depending on my mood. The basic formula it uses is just integer division divided by 5. So 25 minute periods have 5 minute breaks and 15 minute periods have 3 minute breaks. An 11 minute period will have a 2 minute break since 11/5 = 2.2 ≈ 2.
+    set-option -g status-right "#(cat /tmp/gtd)#[fg=colour15,noreverse,bg=colour233] #(date '+%a %m/%d %I:%M %P') "
+
+The script is easily modifiable to use custom programs or commands if you'd rather not use mpd, libnotify, espeak or tmux.
+
+If you don't specify a break length, the script automatically determines how long breaks should be depending on how long you want your working periods to be. I usually use either 25 or 15 minute working periods depending on my mood. The basic formula it uses is just integer division divided by 5. So 25 minute periods have 5 minute breaks and 15 minute periods have 3 minute breaks. An 11 minute period will have a 2 minute break since 11/5 = 2.2 ≈ 2.
 
 ## MIT License
 

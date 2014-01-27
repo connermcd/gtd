@@ -28,7 +28,7 @@ usage() {
 cat << EOF
 USAGE:
 
-   gtd [ -bcmns ] [ work length ] [ break length ]
+   gtd [ -bcmnst ] [ work length ] [ break length ]
 
 OPTIONS:
 
