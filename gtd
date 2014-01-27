@@ -5,6 +5,7 @@ set -e
 # Configuration
 CUSTOM_CMD="clear"
 MPD_CMD="mpc -q toggle"
+DEFAULT_WORK_LENGTH=15
 
 NOTIFY_CMD="notify-send"
 NOTIFY_WORK="\"Get things done.\""
@@ -16,17 +17,18 @@ SPEAK_BREAK="$NOTIFY_BREAK"
 
 # Flag defaults
 START_WITH_BREAK=false
-DO_CUSTOM=false
+DO_CUSTOM_CMD=false
 DO_MPD=true
 DO_NOTIFY=true
-DO_SPEAK=false
+DO_SPEAK=true
+DO_TMUX=true
 
 # Display help
 usage() {
 cat << EOF
 USAGE:
 
-   gtd [ -bcmns ] [# of minutes]
+   gtd [ -bcmns ] [ work length ] [ break length ]
 
 OPTIONS:
 
@@ -35,26 +37,48 @@ OPTIONS:
    -m : toggle MPD on change
    -n : notify on change
    -s : speak command
+   -t : show time in tmux status bar
 
 EOF
 }
 
-total_working_time=0
-num_breaks=0
-
-while getopts "bcmnsh?" opt; do
+# Set flag options
+while getopts "bcmnsth?" opt; do
    case $opt in
       b) if $START_WITH_BREAK; then START_WITH_BREAK=false; else START_WITH_BREAK=true; fi;;
-      c) if $DO_CUSTOM; then DO_CUSTOM=false; else DO_CUSTOM=true; fi;;
+      c) if $DO_CUSTOM_CMD; then DO_CUSTOM_CMD=false; else DO_CUSTOM_CMD=true; fi;;
       m) if $DO_MPD; then DO_MPD=false; else DO_MPD=true; fi;;
       n) if $DO_NOTIFY; then DO_NOTIFY=false; else DO_NOTIFY=true; fi;;
       s) if $DO_SPEAK; then DO_SPEAK=false; else DO_SPEAK=true; fi;;
+      t) if $DO_TMUX; then DO_TMUX=false; else DO_TMUX=true; fi;;
       *) usage; exit 1;;
    esac
 done
 shift $((OPTIND-1))
-if [ -z "$1" -o ! -z "${1##[0-9]*}" ]; then usage; exit 1; fi
 
+# Set work length if specified and is a number
+if [ -z "$1" ]; then
+   work_length=$DEFAULT_WORK_LENGTH
+elif [ ! -z "${1##[0-9]*}" ]; then
+   usage && exit 1
+else
+   work_length=$1
+fi
+
+# Set break length if specified and is a number
+if [ -z "$2" ]; then
+   break_length=$(( $work_length / 5 ))
+elif [ ! -z "${2##[0-9]*}" ]; then
+   usage && exit 1
+else
+   break_length=$2
+fi
+
+# Collect session statistics
+total_working_time=0
+num_breaks=0
+
+# Displays milliseconds as HH:MM:SS
 hms() {
    local S=$1
    ((h=S/3600))
@@ -69,6 +93,11 @@ vsleep() {
    while [ $(date +%s) -lt $later ]; do
       left=$(( $later - $(date +%s) ))
       hms=$(hms $left)
+      # Updates a temporary file for tmux to read from and refreshes the client
+      if $DO_TMUX; then
+         (echo -ne "$hms |" > /tmp/gtd)
+         (tmux refresh-client -S)
+      fi
       echo -e "$hms $(tput el)\r\c"
       sleep 1
    done
@@ -76,27 +105,29 @@ vsleep() {
 
 # Do various tasks based on the user-specified flags
 do_options() {
-   if $DO_MPD; then eval "$MPD_CMD"; fi
-   if $DO_CUSTOM; then eval "$CUSTOM_CMD"; fi
+   if $DO_CUSTOM_CMD; then eval "$CUSTOM_CMD"; fi
    if $DO_NOTIFY && $1; then eval "$NOTIFY_CMD $NOTIFY_BREAK";
    elif $DO_NOTIFY; then eval "$NOTIFY_CMD $NOTIFY_WORK"; fi
    if $DO_SPEAK && $1; then eval "$SPEAK_CMD $SPEAK_BREAK";
    elif $DO_SPEAK; then eval "$SPEAK_CMD $SPEAK_WORK"; fi
+   if $DO_MPD; then (sleep 1 && eval "$MPD_CMD"); fi
 }
 
-WORK_LENGTH=$1
-BREAK_LENGTH=$(( $1 / 5 ))
-clear && echo "$WORK_LENGTH minute sessions with $BREAK_LENGTH minute breaks."
+# Clear the temporary file and refresh tmux when interrupted/terminated
+[[ $DO_TMUX ]] && trap '>/tmp/gtd && tmux refresh-client -S' INT TERM
+
+# Display the initial session settings
+clear && echo "$work_length minute sessions with $break_length minute breaks."
 
 # Loop through work and break cycles
 while true; do
    if $START_WITH_BREAK; then
       do_options true
-      vsleep $(( $BREAK_LENGTH * 60 ))
+      vsleep $(( $break_length * 60 ))
    else START_WITH_BREAK=true; fi
    do_options false
-   vsleep $(( $WORK_LENGTH * 60 ))
-   total_working_time=$(( ($total_working_time + $WORK_LENGTH) ))
+   vsleep $(( $work_length * 60 ))
+   total_working_time=$(( ($total_working_time + $work_length) ))
    num_breaks=$(( $num_breaks + 1 ))
    echo -e "Break #$num_breaks. Total working time: $(hms $(( $total_working_time * 60 )))"
 done
