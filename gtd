@@ -2,8 +2,7 @@
 
 set -e
 
-# configuration
-
+# Configuration
 CUSTOM_CMD="clear"
 MPD_CMD="mpc -q toggle"
 
@@ -15,14 +14,14 @@ SPEAK_CMD="&>/dev/null espeak"
 SPEAK_WORK="$NOTIFY_WORK"
 SPEAK_BREAK="$NOTIFY_BREAK"
 
-# flag defaults
-
+# Flag defaults
 START_WITH_BREAK=false
 DO_CUSTOM=false
 DO_MPD=true
 DO_NOTIFY=true
 DO_SPEAK=false
 
+# Display help
 usage() {
 cat << EOF
 USAGE:
@@ -64,6 +63,7 @@ hms() {
    printf "%02d:%02d:%02d\n" $h $m $s
 }
 
+# Displays a countdown using hms() while sleeping ("visual" sleep)
 vsleep() {
    later=$(date --date "now +$1 seconds" +%s)
    while [ $(date +%s) -lt $later ]; do
@@ -74,6 +74,7 @@ vsleep() {
    done
 }
 
+# Do various tasks based on the user-specified flags
 do_options() {
    if $DO_MPD; then eval "$MPD_CMD"; fi
    if $DO_CUSTOM; then eval "$CUSTOM_CMD"; fi
@@ -87,6 +88,7 @@ WORK_LENGTH=$1
 BREAK_LENGTH=$(( $1 / 5 ))
 clear && echo "$WORK_LENGTH minute sessions with $BREAK_LENGTH minute breaks."
 
+# Loop through work and break cycles
 while true; do
    if $START_WITH_BREAK; then
       do_options true
