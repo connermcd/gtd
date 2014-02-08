@@ -7,21 +7,23 @@ CUSTOM_CMD="clear"
 MPD_CMD="mpc -q toggle"
 DEFAULT_WORK_LENGTH=15
 
-NOTIFY_CMD="notify-send"
+# NOTIFY_CMD="notify-send"
+NOTIFY_CMD="echo" # for Mac. Or "xmessage -center -timeout 5" with X11.
 NOTIFY_WORK="\"Get things done.\""
 NOTIFY_BREAK="\"Take a break.\""
 
-SPEAK_CMD="&>/dev/null espeak"
+# SPEAK_CMD="&>/dev/null espeak"
+SPEAK_CMD="&>/dev/null say"
 SPEAK_WORK="$NOTIFY_WORK"
 SPEAK_BREAK="$NOTIFY_BREAK"
 
 # Flag defaults
 START_WITH_BREAK=false
 DO_CUSTOM_CMD=false
-DO_MPD=true
+DO_MPD=false
 DO_NOTIFY=true
 DO_SPEAK=true
-DO_TMUX=true
+DO_TMUX=false
 
 # Display help
 usage() {
@@ -89,9 +91,12 @@ hms() {
 
 # Displays a countdown using hms() while sleeping ("visual" sleep)
 vsleep() {
-   later=$(date --date "now +$1 seconds" +%s)
-   while [ $(date +%s) -lt $later ]; do
-      left=$(( $later - $(date +%s) ))
+   # later=$(date --date "now +$1 seconds" +%s)
+   # while [ $(date +%s) -lt $later ]; do
+   # Below lines use BSD Date for Mac
+   later=$(date -j -v+$1S +%s) 
+   while [ $(date -j +%s) -lt $later ]; do
+      left=$(( $later - $(date -j +%s) ))
       hms=$(hms $left)
       # Updates a temporary file for tmux to read from and refreshes the client
       if $DO_TMUX; then
