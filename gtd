@@ -23,7 +23,7 @@ SPEAK_WORK="$NOTIFY_WORK"
 SPEAK_BREAK="$NOTIFY_BREAK"
 
 # Flag defaults
-START_WITH_BREAK=false
+DO_BREAK=false
 DO_CUSTOM_CMD=false
 DO_MPD=false
 DO_NOTIFY=false
@@ -52,7 +52,7 @@ EOF
 # Set flag options
 while getopts "bcmnsth?" opt; do
    case $opt in
-      b) START_WITH_BREAK=true;;
+      b) DO_BREAK=true;;
       c) DO_CUSTOM_CMD=true;;
       m) DO_MPD=true;;
       n) DO_NOTIFY=true;;
@@ -134,10 +134,10 @@ clear && echo "$work_length minute sessions with $break_length minute breaks."
 
 # Loop through work and break cycles
 while true; do
-   if $START_WITH_BREAK; then
+   if $DO_BREAK; then
       do_options true
       vsleep $(( $break_length * 60 ))
-   else START_WITH_BREAK=true; fi
+   else DO_BREAK=true; fi
    do_options false
    vsleep $(( $work_length * 60 ))
    total_working_time=$(( ($total_working_time + $work_length) ))
