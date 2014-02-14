@@ -3,32 +3,30 @@
 set -e
 
 # Configuration
-CUSTOM_CMD="clear"
-MPD_CMD="mpc -q toggle"
-DEFAULT_WORK_LENGTH=15
+CUSTOM_CMD="${CUSTOM_CMD:-"clear"}"
+MPD_CMD="${MPD_CMD:-"mpc -q toggle"}"
+DEFAULT_WORK_LENGTH=${DEFAULT_WORK_LENGTH:-15}
 
 if [[ "$OSTYPE" =~ (^darwin|^freebsd) ]]; then
-   NOTIFY_CMD="echo"
-   # NOTIFY_CMD="xmessage -center -timeout 5"
-   SPEAK_CMD="&>/dev/null say"
+   NOTIFY_CMD="${NOTIFY_CMD:-"echo"}"
+   SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null say"}"
 else
-   NOTIFY_CMD="notify-send"
-   SPEAK_CMD="&>/dev/null espeak"
+   NOTIFY_CMD="${NOTIFY_CMD:-"notify-send"}"
+   SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null espeak"}"
 fi
 
-NOTIFY_WORK="\"Get things done.\""
-NOTIFY_BREAK="\"Take a break.\""
+NOTIFY_WORK="${NOTIFY_WORK:-"\"Get things done.\""}"
+NOTIFY_BREAK="${NOTIFY_BREAK:-"\"Take a break.\""}"
 
-SPEAK_WORK="$NOTIFY_WORK"
-SPEAK_BREAK="$NOTIFY_BREAK"
+SPEAK_WORK="${SPEAK_WORK:-"$NOTIFY_WORK"}"
+SPEAK_BREAK="${SPEAK_BREAK:-"$NOTIFY_BREAK"}"
 
-# Flag defaults
-DO_BREAK=false
-DO_CUSTOM_CMD=false
-DO_MPD=false
-DO_NOTIFY=false
-DO_SPEAK=false
-DO_TMUX=false
+DO_BREAK=${DO_BREAK:-false}
+DO_CUSTOM_CMD=${DO_CUSTOM_CMD:-false}
+DO_MPD=${DO_MPD:-false}
+DO_NOTIFY=${DO_NOTIFY:-false}
+DO_SPEAK=${DO_SPEAK:-false}
+DO_TMUX=${DO_TMUX:-false}
 
 # Display help
 usage() {
