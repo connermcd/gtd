@@ -139,13 +139,13 @@ ctrl_c() {
 
    exit 0
 }
+trap ctrl_c INT TERM
 
 # Display the initial session settings
 clear && echo "$work_length minute sessions with $break_length minute breaks."
 
 # Loop through work and break cycles
 while true; do
-   trap ctrl_c INT TERM
    if $DO_BREAK; then
       in_break=true && do_options
       vsleep $(( $break_length * 60 ))
