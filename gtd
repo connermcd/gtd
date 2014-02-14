@@ -128,16 +128,16 @@ do_options() {
 
 # Handle CTRL-C interrupt
 ctrl_c() {
-	if [[ -z $DO_TMUX ]]; then
-    # Clear the temporary file and refresh tmux when interrupted/terminated
-   		 >/tmp/gtd && tmux refresh-client -S
-    elif [[ $IN_BREAK -eq 0 ]]; then
-	# If INT during break, print total working time
-         echo -e "\rTotal working time: $(hms $(( $total_working_time * 60 )) )"
-	else
-	# If INT during work, print total working time minus time left in this session
-         echo -e "\rTotal working time: $(hms $(( ( $total_working_time * 60 - $left ) )))"
-    fi
+   if [[ -z $DO_TMUX ]]; then
+      # Clear the temporary file and refresh tmux when interrupted/terminated
+      >/tmp/gtd && tmux refresh-client -S
+   elif [[ $IN_BREAK -eq 0 ]]; then
+      # If INT during break, print total working time
+      echo -e "\rTotal working time: $(hms $(( $total_working_time * 60 )) )"
+   else
+      # If INT during work, print total working time minus time left in this session
+      echo -e "\rTotal working time: $(hms $(( ( $total_working_time * 60 - $left ) )))"
+   fi
 }
 
 # Display the initial session settings
@@ -148,11 +148,9 @@ while true; do
    trap ctrl_c INT TERM
    if $DO_BREAK; then
       do_options true
-	  IN_BREAK=0
+      IN_BREAK=0
       vsleep $(( $break_length * 60 ))
-   else
-      DO_BREAK=true
-   fi
+   else DO_BREAK=true; fi
    do_options false
    IN_BREAK=1
    total_working_time=$(( ($total_working_time + $work_length) ))
