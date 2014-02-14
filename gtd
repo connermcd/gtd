@@ -81,7 +81,7 @@ fi
 
 # Collect session statistics
 total_working_time=0
-num_breaks=0
+count=1
 
 # Displays milliseconds as HH:MM:SS
 hms() {
@@ -134,7 +134,7 @@ ctrl_c() {
       echo -e "\rTotal working time: $(hms $(( $total_working_time * 60 )) )"
    else
       # If INT during work, print total working time minus time left in this session
-      echo -e "\rTotal working time: $(hms $(( ( $total_working_time * 60 - $left ) )))"
+      echo -e "\rTotal working time: $(hms $(( ($total_working_time + $work_length) * 60 - $left )))"
    fi
 
    exit 0
@@ -147,14 +147,16 @@ clear && echo "$work_length minute sessions with $break_length minute breaks."
 # Loop through work and break cycles
 while true; do
    if $DO_BREAK; then
+      echo -e "Break. Total working time: $(hms $(( $total_working_time * 60 )))"
       in_break=true && do_options
       vsleep $(( $break_length * 60 ))
    else DO_BREAK=true; fi
-   total_working_time=$(( ($total_working_time + $work_length) ))
+   echo -e "Period #$count. Total working time: $(hms $(( $total_working_time * 60 )))"
    in_break=false && do_options
    vsleep $(( $work_length * 60 ))
-   num_breaks=$(( $num_breaks + 1 ))
-   echo -e "Break #$num_breaks. Total working time: $(hms $(( $total_working_time * 60 )))"
+
+   total_working_time=$(( ($total_working_time + $work_length) ))
+   count=$(( $count + 1 ))
 done
 
 exit 0
