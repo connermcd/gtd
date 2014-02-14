@@ -119,19 +119,19 @@ vsleep() {
 # Do various tasks based on the user-specified flags
 do_options() {
    if $DO_CUSTOM_CMD; then eval "$CUSTOM_CMD"; fi
-   if $DO_NOTIFY && $1; then eval "$NOTIFY_CMD $NOTIFY_BREAK";
+   if $DO_NOTIFY && $in_break; then eval "$NOTIFY_CMD $NOTIFY_BREAK";
    elif $DO_NOTIFY; then eval "$NOTIFY_CMD $NOTIFY_WORK"; fi
-   if $DO_SPEAK && $1; then eval "$SPEAK_CMD $SPEAK_BREAK";
+   if $DO_SPEAK && $in_break; then eval "$SPEAK_CMD $SPEAK_BREAK";
    elif $DO_SPEAK; then eval "$SPEAK_CMD $SPEAK_WORK"; fi
    if $DO_MPD; then (sleep 1 && eval "$MPD_CMD"); fi
 }
 
 # Handle CTRL-C interrupt
 ctrl_c() {
-   if [[ -z $DO_TMUX ]]; then
-      # Clear the temporary file and refresh tmux when interrupted/terminated
-      >/tmp/gtd && tmux refresh-client -S
-   elif [[ $IN_BREAK -eq 0 ]]; then
+   # Clear the temporary file and refresh tmux when interrupted/terminated
+   [[ -z $DO_TMUX ]] && tmux refresh-client -S >/tmp/gtd
+
+   if $in_break; then
       # If INT during break, print total working time
       echo -e "\rTotal working time: $(hms $(( $total_working_time * 60 )) )"
    else
@@ -147,13 +147,11 @@ clear && echo "$work_length minute sessions with $break_length minute breaks."
 while true; do
    trap ctrl_c INT TERM
    if $DO_BREAK; then
-      do_options true
-      IN_BREAK=0
+      in_break=true && do_options
       vsleep $(( $break_length * 60 ))
    else DO_BREAK=true; fi
-   do_options false
-   IN_BREAK=1
    total_working_time=$(( ($total_working_time + $work_length) ))
+   in_break=false && do_options
    vsleep $(( $work_length * 60 ))
    num_breaks=$(( $num_breaks + 1 ))
    echo -e "Break #$num_breaks. Total working time: $(hms $(( $total_working_time * 60 )))"
