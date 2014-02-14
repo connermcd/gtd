@@ -127,7 +127,7 @@ do_options() {
 }
 
 # Clear the temporary file and refresh tmux when interrupted/terminated
-[[ $DO_TMUX ]] && trap '>/tmp/gtd && tmux refresh-client -S' INT TERM
+[[ -z $DO_TMUX ]] && trap '>/tmp/gtd && tmux refresh-client -S' INT TERM
 
 # Display the initial session settings
 clear && echo "$work_length minute sessions with $break_length minute breaks."
