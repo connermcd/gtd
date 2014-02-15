@@ -50,12 +50,12 @@ EOF
 # Set flag options
 while getopts "bcmnsth?" opt; do
    case $opt in
-      b) DO_BREAK=true;;
-      c) DO_CUSTOM_CMD=true;;
-      m) DO_MPD=true;;
-      n) DO_NOTIFY=true;;
-      s) DO_SPEAK=true;;
-      t) DO_TMUX=true;;
+      b) if $DO_BREAK; then DO_BREAK=false; else DO_BREAK=true; fi;;
+      c) if $DO_CUSTOM; then DO_CUSTOM=false; else DO_CUSTOM=true; fi;;
+      m) if $DO_MPD; then DO_MPD=false; else DO_MPD=true; fi;;
+      n) if $DO_NOTIFY; then DO_NOTIFY=false; else DO_NOTIFY=true; fi;;
+      s) if $DO_SPEAK; then DO_SPEAK=false; else DO_SPEAK=true; fi;;
+      t) if $DO_TMUX; then DO_TMUX=false; else DO_TMUX=true; fi;;
       *) usage; exit 1;;
    esac
 done
