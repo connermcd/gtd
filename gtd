@@ -127,7 +127,7 @@ do_options() {
 # Handle CTRL-C interrupt
 ctrl_c() {
    # Clear the temporary file and refresh tmux when interrupted/terminated
-   [[ -z $DO_TMUX ]] && tmux refresh-client -S >/tmp/gtd
+   if $DO_TMUX; then tmux refresh-client -S >/tmp/gtd; fi
 
    if $in_break; then
       # If INT during break, print total working time
