@@ -20,13 +20,34 @@ Basically it loops infinitely between periods of work and breaks. For example...
 
 Will start a loop with 25 minute periods of work separated by 5 minute breaks. If you give it the `-b` flag then it starts on a break instead of a working period.
 
-The `-m`, `-n`, `-s` and `-t` flags are enabled by default. They use `mpc toggle` to toggle your mpd client and libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes, and the `-t` flag refreshes tmux and updates `/tmp/gtd` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
+If you don't specify a break length, the script automatically determines how long breaks should be depending on how long you want your working periods to be. I usually use either 25 or 15 minute working periods depending on my mood. The basic formula it uses is just integer division divided by 5. So 25 minute periods have 5 minute breaks and 15 minute periods have 3 minute breaks. An 11 minute period will have a 2 minute break since 11/5 = 2.2 ≈ 2.
+
+## Configuration
+
+The `-c`, `-m`, `-n`, `-s` and `-t` flags use commands. The `-m` flag uses `mpc toggle` to toggle your mpd client and the `-n` flag uses libnotify to notify when the period ends. Since libnotify is not available on OSX, the `echo` command is used in its place. The `-s` flag enables `espeak` or `say` to speak to you when the period changes. The `-c` flag uses a custom command, which is `clear` by default. The `-t` flag refreshes tmux and updates `/tmp/gtd` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
 
     set-option -g status-right "#(cat /tmp/gtd)#[fg=colour15,noreverse,bg=colour233] #(date '+%a %m/%d %I:%M %P') "
 
-The script is easily modifiable to use custom programs or commands if you'd rather not use mpd, libnotify, espeak or tmux.
+The script is easily modifiable to use custom programs or commands if you'd rather not use the defaults. The one exception to this is the `tmux` integration. For the others, simply set the appropriate variable when starting. You can also configure what the notify and speak commands say, the default work length, and the default flags. If you use a flag after setting the variable to true it will toggle it, turning it off.
 
-If you don't specify a break length, the script automatically determines how long breaks should be depending on how long you want your working periods to be. I usually use either 25 or 15 minute working periods depending on my mood. The basic formula it uses is just integer division divided by 5. So 25 minute periods have 5 minute breaks and 15 minute periods have 3 minute breaks. An 11 minute period will have a 2 minute break since 11/5 = 2.2 ≈ 2.
+    CUSTOM_CMD="clear"
+    MPD_CMD="mpc -q toggle"
+    NOTIFY_CMD="notify-send"
+    SPEAK_CMD="&>/dev/null espeak"
+
+    NOTIFY_WORK="\"Get things done.\""
+    NOTIFY_BREAK="\"Take a break.\""
+
+    DEFAULT_WORK_LENGTH=${DEFAULT_WORK_LENGTH:-15}
+    SPEAK_WORK="$NOTIFY_WORK"
+    SPEAK_BREAK="$NOTIFY_BREAK"
+
+    DO_BREAK=false
+    DO_CUSTOM_CMD=false
+    DO_MPD=false
+    DO_NOTIFY=false
+    DO_SPEAK=false
+    DO_TMUX=false
 
 ## MIT License
 
