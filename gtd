@@ -80,6 +80,7 @@ if [ -n "$3" ]; then usage && exit 1; fi
 # Collect session statistics
 total_working_time=0
 count=1
+interrupt=false
 
 # Displays milliseconds as HH:MM:SS
 hms() {
@@ -87,6 +88,13 @@ hms() {
    ((h=S/3600))
    ((m=S%3600/60))
    ((s=S%60))
+   if $interrupt; then
+      printf "\e]1;(tot) %02d:%02d:%02d\a" $h $m $s
+   elif $in_break; then
+      printf "\e]1;(brk) %02d:%02d:%02d\a" $h $m $s
+   else
+      printf "\e]1;(gtd) %02d:%02d:%02d\a" $h $m $s
+   fi
    printf "%02d:%02d:%02d\n" $h $m $s
 }
 
@@ -118,6 +126,7 @@ do_options() {
 
 # Handle CTRL-C interrupt
 ctrl_c() {
+   interrupt=true
    # Clear the temporary file and refresh tmux when interrupted/terminated
    if $DO_TMUX; then tmux refresh-client -S && rm /tmp/gtd; fi
 
