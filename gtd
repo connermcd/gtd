@@ -80,6 +80,9 @@ else
    break_length=$2
 fi
 
+# Show usage for three arguments or more
+if [ -n "$3" ]; then usage && exit 1; fi
+
 # Collect session statistics
 total_working_time=0
 count=1
