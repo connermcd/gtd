@@ -1,5 +1,7 @@
 f="$(basename $BASH_SOURCE) =>"
 
+# hms() should display ms in HH:MM:SS {{{1
+
 source "$MAIN"
 
 assert "$f hms 0:"      $(hms 0)     = "00:00:00"

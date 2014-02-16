@@ -1,0 +1,70 @@
+f="$(basename $BASH_SOURCE) =>"
+
+# Configuration should be set {{{1
+
+source "$MAIN"
+
+assert "$f CUSTOM_CMD:"          "$CUSTOM_CMD"          = "clear"
+assert "$f MPD_CMD:"             "$MPD_CMD"             = "mpc -q toggle"
+assert "$f NOTIFY_CMD:"          "$NOTIFY_CMD"          = "notify-send"
+assert "$f SPEAK_CMD:"           "$SPEAK_CMD"           = "&>/dev/null espeak"
+assert "$f DEFAULT_WORK_LENGTH:" "$DEFAULT_WORK_LENGTH" = "15"
+assert "$f NOTIFY_WORK:"         "$NOTIFY_WORK"         = "\"Get things done.\""
+assert "$f NOTIFY_BREAK:"        "$NOTIFY_BREAK"        = "\"Take a break.\""
+assert "$f SPEAK_WORK:"          "$SPEAK_WORK"          = "\"Get things done.\""
+assert "$f SPEAK_BREAK:"         "$SPEAK_BREAK"         = "\"Take a break.\""
+assert "$f DO_BREAK:"            "$DO_BREAK"            = "false"
+assert "$f DO_CUSTOM_CMD:"       "$DO_CUSTOM_CMD"       = "false"
+assert "$f DO_MPD:"              "$DO_MPD"              = "false"
+assert "$f DO_NOTIFY:"           "$DO_NOTIFY"           = "false"
+assert "$f DO_SPEAK:"            "$DO_SPEAK"            = "false"
+assert "$f DO_TMUX:"             "$DO_TMUX"             = "false"
+
+# Configuration should allow overwrites {{{1
+
+CUSTOM_CMD=blah
+MPD_CMD=blah
+NOTIFY_CMD=blah
+SPEAK_CMD=blah
+DEFAULT_WORK_LENGTH=blah
+NOTIFY_WORK=blah
+NOTIFY_BREAK=blah
+SPEAK_WORK=blah
+SPEAK_BREAK=blah
+DO_BREAK=true
+DO_CUSTOM_CMD=true
+DO_MPD=true
+DO_NOTIFY=true
+DO_SPEAK=true
+DO_TMUX=true
+
+source "$MAIN"
+
+assert "$f Overwrite CUSTOM_CMD:"          "$CUSTOM_CMD"          = "blah"
+assert "$f Overwrite MPD_CMD:"             "$MPD_CMD"             = "blah"
+assert "$f Overwrite NOTIFY_CMD:"          "$NOTIFY_CMD"          = "blah"
+assert "$f Overwrite SPEAK_CMD:"           "$SPEAK_CMD"           = "blah"
+assert "$f Overwrite DEFAULT_WORK_LENGTH:" "$DEFAULT_WORK_LENGTH" = "blah"
+assert "$f Overwrite NOTIFY_WORK:"         "$NOTIFY_WORK"         = "blah"
+assert "$f Overwrite NOTIFY_BREAK:"        "$NOTIFY_BREAK"        = "blah"
+assert "$f Overwrite SPEAK_WORK:"          "$SPEAK_WORK"          = "blah"
+assert "$f Overwrite SPEAK_BREAK:"         "$SPEAK_BREAK"         = "blah"
+assert "$f Overwrite DO_BREAK:"            "$DO_BREAK"            = true
+assert "$f Overwrite DO_CUSTOM_CMD:"       "$DO_CUSTOM_CMD"       = true
+assert "$f Overwrite DO_MPD:"              "$DO_MPD"              = true
+assert "$f Overwrite DO_NOTIFY:"           "$DO_NOTIFY"           = true
+assert "$f Overwrite DO_SPEAK:"            "$DO_SPEAK"            = true
+assert "$f Overwrite DO_TMUX:"             "$DO_TMUX"             = true
+
+# Flags should toggle state {{{1
+
+source "$MAIN" -bcmnst
+
+assert "$f Toggle DO_BREAK:"            "$DO_BREAK"            = false
+assert "$f Toggle DO_CUSTOM_CMD:"       "$DO_CUSTOM_CMD"       = false
+assert "$f Toggle DO_MPD:"              "$DO_MPD"              = false
+assert "$f Toggle DO_NOTIFY:"           "$DO_NOTIFY"           = false
+assert "$f Toggle DO_SPEAK:"            "$DO_SPEAK"            = false
+assert "$f Toggle DO_TMUX:"             "$DO_TMUX"             = false
+
+# vim: ft=sh
