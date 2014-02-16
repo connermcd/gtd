@@ -5,14 +5,8 @@ set -e
 # Command configuration
 CUSTOM_CMD="${CUSTOM_CMD:-"clear"}"
 MPD_CMD="${MPD_CMD:-"mpc -q toggle"}"
-
-if [[ "$OSTYPE" =~ (^darwin|^freebsd) ]]; then
-   NOTIFY_CMD="${NOTIFY_CMD:-"echo"}"
-   SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null say"}"
-else
-   NOTIFY_CMD="${NOTIFY_CMD:-"notify-send"}"
-   SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null espeak"}"
-fi
+NOTIFY_CMD="${NOTIFY_CMD:-"notify-send"}"
+SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null espeak"}"
 
 # Setting configuration
 DEFAULT_WORK_LENGTH=${DEFAULT_WORK_LENGTH:-15}
@@ -98,15 +92,8 @@ hms() {
 
 # Displays a countdown using hms() while sleeping ("visual" sleep)
 vsleep() {
-   if [[ "$OSTYPE" =~ (^darwin|^freebsd) ]]; then
-      now="date -j +%s"
-      later=$(date -j -v+$1S +%s)
-   else
-      now="date +%s"
-      later=$(date --date "now +$1 seconds" +%s)
-   fi
-   while [ $(eval $now) -lt $later ]; do
-      left=$(( $later - $(eval $now) ))
+   left=$1
+   while [ $left -gt 0 ]; do
       hms=$(hms $left)
       # Updates a temporary file for tmux to read from and refreshes the client
       if $DO_TMUX; then
@@ -115,6 +102,7 @@ vsleep() {
       fi
       echo -e "$hms $(tput el)\r\c"
       sleep 1
+      left=$(( $left - 1 ))
    done
 }
 
