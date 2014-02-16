@@ -1,0 +1,80 @@
+f="$(basename $BASH_SOURCE) =>"
+
+# CUSTOM_CMD {{{1
+CUSTOM_CMD="echo custom_cmd"
+
+# CUSTOM_CMD should be evaluated if DO_CUSTOM is true {{{2
+DO_CUSTOM=true
+source "$MAIN"
+assert "$f CUSTOM_CMD if DO_CUSTOM true:" "custom_cmd" = "$(do_options)"
+
+# CUSTOM_CMD should not be evaluated if DO_CUSTOM is false {{{2
+DO_CUSTOM=false
+source "$MAIN"
+assert "$f CUSTOM_CMD if DO_CUSTOM false:" "-z" "$(do_options)"
+
+unset DO_CUSTOM # }}}1
+# NOTIFY_CMD {{{1
+NOTIFY_CMD="echo"
+NOTIFY_BREAK="notify_break"
+NOTIFY_WORK="notify_work"
+
+# NOTIFY_CMD should be evaluated with NOTIFY_BREAK if DO_NOTIFY and in_break are true {{{2
+DO_NOTIFY=true
+in_break=true
+source "$MAIN"
+assert "$f NOTIFY_CMD if DO_NOTIFY/in_break true:" "notify_break" = "$(do_options)"
+
+# NOTIFY_CMD should be evaluated with NOTIFY_WORK if DO_NOTIFY is true but in_break is false {{{2
+DO_NOTIFY=true
+in_break=false
+source "$MAIN"
+assert "$f NOTIFY_CMD if DO_NOTIFY true && in_break false:" "notify_work" = "$(do_options)"
+
+# NOTIFY_CMD should not be evaluated if DO_NOTIFY is false {{{2
+DO_NOTIFY=false
+
+source "$MAIN"
+assert "$f No NOTIFY_CMD if DO_NOTIFY false:" "-z" "$(do_options)"
+
+unset DO_NOTIFY # }}}1
+# SPEAK_CMD {{{1
+SPEAK_CMD="echo"
+SPEAK_BREAK="speak_break"
+SPEAK_WORK="speak_work"
+
+# SPEAK_CMD should be evaluated with SPEAK_BREAK if DO_SPEAK and in_break are true {{{2
+DO_SPEAK=true
+in_break=true
+source "$MAIN"
+assert "$f SPEAK_CMD if DO_SPEAK/in_break true:" "speak_break" = "$(do_options)"
+
+# SPEAK_CMD should be evaluated with SPEAK_WORK if DO_SPEAK is true but in_break is false {{{2
+DO_SPEAK=true
+in_break=false
+source "$MAIN"
+assert "$f SPEAK_CMD if DO_SPEAK true && in_break false:" "speak_work" = "$(do_options)"
+
+# SPEAK_CMD should not be evaluated if DO_SPEAK is false {{{2
+DO_SPEAK=false
+
+source "$MAIN"
+assert "$f No SPEAK_CMD if DO_SPEAK false:" "-z" "$(do_options)"
+
+unset DO_SPEAK # }}}1
+# MPD_CMD {{{1
+MPD_CMD="echo yes"
+
+# MPD_CMD should be evaluated if DO_MPD is true {{{2
+DO_MPD=true
+source "$MAIN"
+assert "$f MPD_CMD if DO_MPD true:" "yes" = "$(do_options)"
+
+# MPD_CMD should not be evaluated if DO_MPD is false {{{2
+DO_MPD=false
+source "$MAIN"
+assert "$f MPD_CMD if DO_MPD false:" "-z" "$(do_options)"
+
+unset DO_MPD # }}}1
+
+# vim: ft=sh
