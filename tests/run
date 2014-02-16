@@ -6,18 +6,26 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 RESET_COLOR='\033[0m'
 
-echo "Running tests..."
+pass_cnt=0
+fail_cnt=0
+
+assert() {
+   if [ ${*:2} ]; then
+      pass_cnt=$(( pass_cnt + 1 ))
+      echo -ne "${GREEN}.${RESET_COLOR}"
+   else
+      fail_cnt=$(( fail_cnt + 1 ))
+      echo -ne "${RED}✗${RESET_COLOR}"
+      errors="$errors\n$*\n"
+   fi
+}
+
+echo -e "Running tests...\n"
 
 for file in "$(dirname $MAIN)/tests/"*.test; do
-
-   passed=$(DEBUG=true source "$file" 1>&2 && echo $?)
-
-   if [ $passed ]; then
-      echo -ne "${GREEN}✓${RESET_COLOR}"
-   else
-      echo -ne "${RED}✗${RESET_COLOR}"
-   fi
-
+   DEBUG=true source "$file"
 done
 
-echo -e "\nDone."
+echo -e "\n${RED}${errors}${RESET_COLOR}"
+
+echo -e "Done. $pass_cnt passed. $fail_cnt failed."

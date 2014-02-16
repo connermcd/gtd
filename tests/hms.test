@@ -1,11 +1,13 @@
+f="$(basename $BASH_SOURCE) =>"
+
 source "$MAIN"
 
-test $(hms 0)     = "00:00:00"
-test $(hms 1)     = "00:00:01"
-test $(hms 10)    = "00:00:10"
-test $(hms 60)    = "00:01:00"
-test $(hms 600)   = "00:10:00"
-test $(hms 3600)  = "01:00:00"
-test $(hms 36000) = "10:00:00"
+assert "$f hms 0:"      $(hms 0)     = "00:00:00"
+assert "$f hms 1:"      $(hms 1)     = "00:00:01"
+assert "$f hms 10:"     $(hms 10)    = "00:00:10"
+assert "$f hms 60:"     $(hms 60)    = "00:01:00"
+assert "$f hms 600:"    $(hms 600)   = "00:10:00"
+assert "$f hms 3600:"   $(hms 3600)  = "01:00:00"
+assert "$f hms 36000:"  $(hms 36000) = "10:00:00"
 
 # vim: ft=sh
