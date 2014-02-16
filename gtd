@@ -140,28 +140,32 @@ ctrl_c() {
 
    exit 0
 }
-trap ctrl_c INT TERM
 
-# Display the initial session settings
-clear && echo "$work_length minute sessions with $break_length minute breaks."
+main() {
+   # Display the initial session settings
+   clear && echo "$work_length minute sessions with $break_length minute breaks."
 
-# Loop through work and break cycles
-while true; do
-   # Break period
-   if $DO_BREAK; then
-      echo -e "Break. Total working time: $(hms $(( $total_working_time * 60 )))"
-      in_break=true && do_options
-      vsleep $(( $break_length * 60 ))
-   else DO_BREAK=true; fi
+   # Loop through work and break cycles
+   while true; do
+      # Break period
+      if $DO_BREAK; then
+         echo -e "Break. Total working time: $(hms $(( $total_working_time * 60 )))"
+         in_break=true && do_options
+         vsleep $(( $break_length * 60 ))
+      else DO_BREAK=true; fi
 
-   # Work period
-   echo -e "Period #$count. Total working time: $(hms $(( $total_working_time * 60 )))"
-   in_break=false && do_options
-   vsleep $(( $work_length * 60 ))
+      # Work period
+      echo -e "Period #$count. Total working time: $(hms $(( $total_working_time * 60 )))"
+      in_break=false && do_options
+      vsleep $(( $work_length * 60 ))
 
-   # Calculate totals
-   total_working_time=$(( ($total_working_time + $work_length) ))
-   count=$(( $count + 1 ))
-done
+      # Calculate totals
+      total_working_time=$(( ($total_working_time + $work_length) ))
+      count=$(( $count + 1 ))
+   done
+}
 
-exit 0
+if [ ! $DEBUG ]; then
+   trap ctrl_c INT TERM
+   main
+fi
