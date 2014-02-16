@@ -1,0 +1,23 @@
+#!/bin/bash
+
+MAIN=~/.src/sh/gtd/gtd
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+RESET_COLOR='\033[0m'
+
+echo "Running tests..."
+
+for file in "$(dirname $MAIN)/tests/"*.test; do
+
+   passed=$(DEBUG=true source "$file" 1>&2 && echo $?)
+
+   if [ $passed ]; then
+      echo -ne "${GREEN}✓${RESET_COLOR}"
+   else
+      echo -ne "${RED}✗${RESET_COLOR}"
+   fi
+
+done
+
+echo -e "\nDone."

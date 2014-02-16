@@ -1,0 +1,11 @@
+source "$MAIN"
+
+test $(hms 0)     = "00:00:00"
+test $(hms 1)     = "00:00:01"
+test $(hms 10)    = "00:00:10"
+test $(hms 60)    = "00:01:00"
+test $(hms 600)   = "00:10:00"
+test $(hms 3600)  = "01:00:00"
+test $(hms 36000) = "10:00:00"
+
+# vim: ft=sh
