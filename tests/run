@@ -10,7 +10,7 @@ pass_cnt=0
 fail_cnt=0
 
 assert() {
-   if [ "$2" $3 "$4" ]; then
+   if [ "${@:2}" ]; then
       pass_cnt=$(( pass_cnt + 1 ))
       echo -ne "${GREEN}.${RESET_COLOR}"
    else
