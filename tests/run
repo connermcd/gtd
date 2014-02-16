@@ -6,6 +6,11 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 RESET_COLOR='\033[0m'
 
+if [[ "$OSTYPE" =~ (^darwin|^freebsd) ]]; then
+   init=$(date -j +%s)
+else
+   init=$(date +%s)
+fi
 pass_cnt=0
 fail_cnt=0
 
@@ -28,4 +33,8 @@ done
 
 echo -e "\n${RED}${errors}${RESET_COLOR}"
 
-echo -e "Done. $pass_cnt passed. $fail_cnt failed."
+if [[ "$OSTYPE" =~ (^darwin|^freebsd) ]]; then
+   echo -e "Done: $(($(date -j +%s)-init))s. $pass_cnt passed. $fail_cnt failed."
+else
+   echo -e "Done: $(($(date +%s)-init))s. $pass_cnt passed. $fail_cnt failed."
+fi
