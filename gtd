@@ -80,7 +80,6 @@ if [ -n "$3" ]; then usage && exit 1; fi
 # Collect session statistics
 total_working_time=0
 count=1
-interrupt=false
 
 # Displays milliseconds as HH:MM:SS
 hms() {
@@ -88,13 +87,6 @@ hms() {
    ((h=S/3600))
    ((m=S%3600/60))
    ((s=S%60))
-   if $interrupt; then
-      printf "\e]1;(tot) %02d:%02d:%02d\a" $h $m $s
-   elif $in_break; then
-      printf "\e]1;(brk) %02d:%02d:%02d\a" $h $m $s
-   else
-      printf "\e]1;(gtd) %02d:%02d:%02d\a" $h $m $s
-   fi
    printf "%02d:%02d:%02d\n" $h $m $s
 }
 
@@ -107,6 +99,12 @@ vsleep() {
       if $DO_TMUX; then
          (echo -ne "$hms |" > /tmp/gtd)
          (tmux refresh-client -S)
+      fi
+      # Prints time information to terminal title bar
+      if $in_break; then
+         echo -ne "\e]1;(brk) $hms\a"
+      else
+         echo -ne "\e]1;(gtd) $hms\a"
       fi
       echo -e "$hms $(tput el)\r\c"
       sleep 1
@@ -126,17 +124,19 @@ do_options() {
 
 # Handle CTRL-C interrupt
 ctrl_c() {
-   interrupt=true
    # Clear the temporary file and refresh tmux when interrupted/terminated
    if $DO_TMUX; then tmux refresh-client -S && rm /tmp/gtd; fi
 
    if $in_break; then
-      # If INT during break, print total working time
-      echo -e "\rTotal working time: $(hms $(( $total_working_time * 60 )) )"
+      total=$(hms $(( $total_working_time * 60 )) )
    else
-      # If INT during work, print total working time minus time left in this session
-      echo -e "\rTotal working time: $(hms $(( ($total_working_time + $work_length) * 60 - $left )))"
+      total=$(hms $(( ($total_working_time + $work_length) * 60 - $left )))
    fi
+
+   echo -e "\rTotal working time: $total"
+
+   # Prints total time to terminal title bar
+   echo -ne "\e]1;(tot) $total\a"
 
    exit 0
 }
