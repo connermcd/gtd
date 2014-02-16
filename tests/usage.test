@@ -1,0 +1,19 @@
+f="$(basename $BASH_SOURCE) =>"
+
+# Usage should be printed for inappropriate flags {{{1
+
+assert "$f -?:" "$(source "$MAIN" -?)" = "$(usage)"
+assert "$f -h:" "$(source "$MAIN" -h)" = "$(usage)"
+
+# Usage should be printed for inappropriate arguments {{{1
+
+assert "$f ?:"    "$(source "$MAIN" ?)"      = "$(usage)"
+assert "$f help:" "$(source "$MAIN" help)"   = "$(usage)"
+assert "$f 5m:"   "$(source "$MAIN" "5m")"   = "$(usage)"
+assert "$f 5 m:"  "$(source "$MAIN" 5 m)"    = "$(usage)"
+
+# Usage should be printed for too many arguments {{{1
+
+assert "$f 1 2 3:"  "$(source "$MAIN" 1 2 3)"    = "$(usage)"
+
+# vim: ft=sh
