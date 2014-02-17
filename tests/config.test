@@ -67,4 +67,20 @@ assert "$f Toggle DO_NOTIFY:"           "$DO_NOTIFY"           = false
 assert "$f Toggle DO_SPEAK:"            "$DO_SPEAK"            = false
 assert "$f Toggle DO_TMUX:"             "$DO_TMUX"             = false
 
+# Configuration file {{{1
+echo "CUSTOM_CMD=\"cfg_file\"" > ~/.gtdrc
+echo "CUSTOM_CMD=\"custom_cfg\"" > /tmp/custom_cfg
+
+# Should read from ~/.gtdrc if exists {{{2
+source "$MAIN"
+assert "$f Read from ~/.gtdrc:" "$CUSTOM_CMD" = "cfg_file"
+
+# Should read from other file if specified {{{2
+source "$MAIN" -f /tmp/custom_cfg
+assert "$f Read from specified file:" "$CUSTOM_CMD" = "custom_cfg"
+
+rm /tmp/custom_cfg
+rm ~/.gtdrc
+unset CUSTOM_CMD
+
 # vim: ft=sh
