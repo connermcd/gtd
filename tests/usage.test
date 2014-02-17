@@ -1,8 +1,6 @@
-f="$(basename $BASH_SOURCE) =>"
+# Usage should be printed for inappropriate flags {{{1
 
 source "$MAIN"
-
-# Usage should be printed for inappropriate flags {{{1
 
 assert "$f -?:" "$(source "$MAIN" -?)" = "$(usage)"
 assert "$f -h:" "$(source "$MAIN" -h)" = "$(usage)"

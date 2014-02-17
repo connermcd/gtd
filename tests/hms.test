@@ -1,5 +1,3 @@
-f="$(basename $BASH_SOURCE) =>"
-
 # hms() should display ms in HH:MM:SS {{{1
 
 source "$MAIN"

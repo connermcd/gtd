@@ -28,7 +28,7 @@ assert() {
 echo -e "Running tests...\n"
 
 for file in "$(dirname $MAIN)/tests/"*.test; do
-   DEBUG=true source "$file"
+   DEBUG=true f="$(basename $file) =>" source "$file"
 done
 
 echo -e "\n${RED}${errors}${RESET_COLOR}"
