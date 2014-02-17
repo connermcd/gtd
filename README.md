@@ -9,6 +9,7 @@
     -n : notify on change
     -s : speak command
     -t : show time in tmux status bar
+    -f : specify a configuration file
 
 ## Usage
 
@@ -24,21 +25,20 @@ If you don't specify a break length, the script automatically determines how lon
 
 ## Configuration
 
-The `-c`, `-m`, `-n`, `-s` and `-t` flags use commands. The `-m` flag uses `mpc toggle` to toggle your mpd client and the `-n` flag uses libnotify to notify when the period ends. Since libnotify is not available on OSX, the `echo` command is used in its place. The `-s` flag enables `espeak` or `say` to speak to you when the period changes. The `-c` flag uses a custom command, which is `clear` by default. The `-t` flag refreshes tmux and updates `/tmp/gtd` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
+The `-c`, `-m`, `-n`, `-s` and `-t` flags use commands. The `-m` flag uses `mpc toggle` to toggle your mpd client and the `-n` flag uses libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes. The `-c` flag uses a custom command, which is `clear` by default. The `-t` flag refreshes tmux and updates `/tmp/gtd` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
 
     set-option -g status-right "#(cat /tmp/gtd)#[fg=colour15,noreverse,bg=colour233] #(date '+%a %m/%d %I:%M %P') "
 
-The script is easily modifiable to use custom programs or commands if you'd rather not use the defaults. The one exception to this is the `tmux` integration. For the others, simply set the appropriate variable when starting. You can also configure what the notify and speak commands say, the default work length, and the default flags. If you use a flag after setting the variable to true it will toggle it, turning it off.
+The script is easily modifiable to use custom programs or commands if you'd rather not use the defaults. The one exception to this is the `tmux` integration. For the others, simply set the appropriate variable when starting or in the file `~/.gtdrc`. You can use the `-f` flag if you'd like to use a different file. The configurable variables are provided below. If you use a flag after setting a boolean variable to true it will toggle it, turning it off.
 
     CUSTOM_CMD="clear"
     MPD_CMD="mpc -q toggle"
     NOTIFY_CMD="notify-send"
     SPEAK_CMD="&>/dev/null espeak"
 
+    DEFAULT_WORK_LENGTH=${DEFAULT_WORK_LENGTH:-15}
     NOTIFY_WORK="\"Get things done.\""
     NOTIFY_BREAK="\"Take a break.\""
-
-    DEFAULT_WORK_LENGTH=${DEFAULT_WORK_LENGTH:-15}
     SPEAK_WORK="$NOTIFY_WORK"
     SPEAK_BREAK="$NOTIFY_BREAK"
 
