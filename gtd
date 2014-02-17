@@ -15,6 +15,9 @@ NOTIFY_BREAK="${NOTIFY_BREAK:-"\"Take a break.\""}"
 SPEAK_WORK="${SPEAK_WORK:-"$NOTIFY_WORK"}"
 SPEAK_BREAK="${SPEAK_BREAK:-"$NOTIFY_BREAK"}"
 
+# File configuration
+CFG_FILE=${CFG_FILE:-~/.gtdrc}
+
 # Flag configuration
 DO_BREAK=${DO_BREAK:-false}
 DO_CUSTOM=${DO_CUSTOM:-false}
@@ -38,12 +41,13 @@ OPTIONS:
    -n : notify on change
    -s : speak command
    -t : show time in tmux status bar
+   -f : specify a configuration file
 
 EOF
 }
 
 # Set flag options
-while getopts "bcmnsth?" opt; do
+while getopts "bcmnsthf:?" opt; do
    case $opt in
       b) if $DO_BREAK;  then DO_BREAK=false;  else DO_BREAK=true;  fi;;
       c) if $DO_CUSTOM; then DO_CUSTOM=false; else DO_CUSTOM=true; fi;;
@@ -51,10 +55,15 @@ while getopts "bcmnsth?" opt; do
       n) if $DO_NOTIFY; then DO_NOTIFY=false; else DO_NOTIFY=true; fi;;
       s) if $DO_SPEAK;  then DO_SPEAK=false;  else DO_SPEAK=true;  fi;;
       t) if $DO_TMUX;   then DO_TMUX=false;   else DO_TMUX=true;   fi;;
+      f) CFG_FILE=$OPTARG;;
       *) usage; exit 1;;
    esac
 done
 shift $((OPTIND-1))
+
+if [ -e "$CFG_FILE" ]; then
+   source "$CFG_FILE"
+fi
 
 # Set work length if specified and is a number
 if [ -z "$1" ]; then
