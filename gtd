@@ -102,9 +102,9 @@ vsleep() {
       fi
       # Prints time information to terminal title bar
       if $in_break; then
-         echo -ne "\e]1;(brk) $hms\a"
+         printf "\e]1;(brk) $hms\a"
       else
-         echo -ne "\e]1;(gtd) $hms\a"
+         printf "\e]1;(gtd) $hms\a"
       fi
       echo -e "$hms $(tput el)\r\c"
       sleep 1
@@ -136,7 +136,7 @@ ctrl_c() {
    echo -e "\rTotal working time: $total"
 
    # Prints total time to terminal title bar
-   echo -ne "\e]1;(tot) $total\a"
+   printf "\e]1;(tot) $total\a"
 
    exit 0
 }
