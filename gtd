@@ -16,15 +16,15 @@ SPEAK_WORK="${SPEAK_WORK:-"$NOTIFY_WORK"}"
 SPEAK_BREAK="${SPEAK_BREAK:-"$NOTIFY_BREAK"}"
 
 # File configuration
-CFG_FILE=${CFG_FILE:-~/.gtdrc}
+CFG_FILE="${CFG_FILE:-$HOME/.gtdrc}"
 
 # Flag configuration
-DO_BREAK=${DO_BREAK:-false}
-DO_CUSTOM=${DO_CUSTOM:-false}
-DO_MPD=${DO_MPD:-false}
-DO_NOTIFY=${DO_NOTIFY:-false}
-DO_SPEAK=${DO_SPEAK:-false}
-DO_TMUX=${DO_TMUX:-false}
+DO_BREAK="${DO_BREAK:-false}"
+DO_CUSTOM="${DO_CUSTOM:-false}"
+DO_MPD="${DO_MPD:-false}"
+DO_NOTIFY="${DO_NOTIFY:-false}"
+DO_SPEAK="${DO_SPEAK:-false}"
+DO_TMUX="${DO_TMUX:-false}"
 
 # Display help
 usage() {
@@ -49,38 +49,38 @@ EOF
 # Set flag options
 while getopts "bcmnsthf:?" opt; do
    case $opt in
-      b) if $DO_BREAK;  then DO_BREAK=false;  else DO_BREAK=true;  fi;;
-      c) if $DO_CUSTOM; then DO_CUSTOM=false; else DO_CUSTOM=true; fi;;
-      m) if $DO_MPD;    then DO_MPD=false;    else DO_MPD=true;    fi;;
-      n) if $DO_NOTIFY; then DO_NOTIFY=false; else DO_NOTIFY=true; fi;;
-      s) if $DO_SPEAK;  then DO_SPEAK=false;  else DO_SPEAK=true;  fi;;
-      t) if $DO_TMUX;   then DO_TMUX=false;   else DO_TMUX=true;   fi;;
-      f) CFG_FILE=$OPTARG;;
+      b) if "$DO_BREAK";  then DO_BREAK=false;  else DO_BREAK=true;  fi;;
+      c) if "$DO_CUSTOM"; then DO_CUSTOM=false; else DO_CUSTOM=true; fi;;
+      m) if "$DO_MPD";    then DO_MPD=false;    else DO_MPD=true;    fi;;
+      n) if "$DO_NOTIFY"; then DO_NOTIFY=false; else DO_NOTIFY=true; fi;;
+      s) if "$DO_SPEAK";  then DO_SPEAK=false;  else DO_SPEAK=true;  fi;;
+      t) if "$DO_TMUX";   then DO_TMUX=false;   else DO_TMUX=true;   fi;;
+      f) CFG_FILE="$OPTARG";;
       *) usage; exit 1;;
    esac
 done
-shift $((OPTIND-1))
+shift "$((OPTIND-1))"
 
-if [ -e "$CFG_FILE" ]; then
+if [[ -e "$CFG_FILE" ]]; then
    source "$CFG_FILE"
 fi
 
 # Set work length if specified and is a number
-if [ -z "$1" ]; then
-   work_length=$DEFAULT_WORK_LENGTH
+if [[ -z "$1" ]]; then
+   work_length="$DEFAULT_WORK_LENGTH"
 elif [[ "$1" =~ [^0-9] ]]; then
    usage && exit 1
 else
-   work_length=$1
+   work_length="$1"
 fi
 
 # Set break length if specified and is a number
-if [ -z "$2" ]; then
-   break_length=$(( $work_length / 5 ))
+if [[ -z "$2" ]]; then
+   break_length="$(( $work_length / 5 ))"
 elif [[ "$2" =~ [^0-9] ]]; then
    usage && exit 1
 else
-   break_length=$2
+   break_length="$2"
 fi
 
 # Show usage for three arguments or more
@@ -92,29 +92,32 @@ count=1
 
 # Displays milliseconds as HH:MM:SS
 hms() {
-   local S=$1
+   local S="$1"
    ((h=S/3600))
    ((m=S%3600/60))
    ((s=S%60))
-   printf "%02d:%02d:%02d\n" $h $m $s
+   printf "%02d:%02d:%02d\n" "$h" "$m" "$s"
 }
 
 # Displays a countdown using hms() while sleeping ("visual" sleep)
 vsleep() {
-   left=$1
-   while [ $left -gt 0 ]; do
-      hms=$(hms $left)
+   left="$1"
+   while [ "$left" -gt 0 ]; do
+      hms="$(hms $left)"
+
       # Updates a temporary file for tmux to read from and refreshes the client
       if $DO_TMUX; then
          (echo -ne "$hms |" > /tmp/gtd)
          (tmux refresh-client -S)
       fi
+
       # Prints time information to terminal title bar
-      if $in_break; then
+      if "$in_break"; then
          printf "\e]1;(brk) $hms\a"
       else
          printf "\e]1;(gtd) $hms\a"
       fi
+
       echo -e "$hms $(tput el)\r\c"
       sleep 1
       left=$(( $left - 1 ))
@@ -123,23 +126,23 @@ vsleep() {
 
 # Do various tasks based on the user-specified flags
 do_options() {
-   if $DO_CUSTOM; then eval "$CUSTOM_CMD"; fi
-   if $DO_NOTIFY && $in_break; then eval "$NOTIFY_CMD $NOTIFY_BREAK";
-   elif $DO_NOTIFY; then eval "$NOTIFY_CMD $NOTIFY_WORK"; fi
-   if $DO_SPEAK && $in_break; then eval "$SPEAK_CMD $SPEAK_BREAK";
-   elif $DO_SPEAK; then eval "$SPEAK_CMD $SPEAK_WORK"; fi
-   if $DO_MPD; then (sleep 1 && eval "$MPD_CMD"); fi
+   if "$DO_CUSTOM"; then eval "$CUSTOM_CMD"; fi
+   if "$DO_NOTIFY" && "$in_break"; then eval "$NOTIFY_CMD $NOTIFY_BREAK";
+   elif "$DO_NOTIFY"; then eval "$NOTIFY_CMD $NOTIFY_WORK"; fi
+   if "$DO_SPEAK" && "$in_break"; then eval "$SPEAK_CMD $SPEAK_BREAK";
+   elif "$DO_SPEAK"; then eval "$SPEAK_CMD $SPEAK_WORK"; fi
+   if "$DO_MPD"; then (sleep 1 && eval "$MPD_CMD"); fi
 }
 
 # Handle CTRL-C interrupt
 ctrl_c() {
    # Clear the temporary file and refresh tmux when interrupted/terminated
-   if $DO_TMUX; then tmux refresh-client -S && rm /tmp/gtd; fi
+   if "$DO_TMUX"; then tmux refresh-client -S && rm /tmp/gtd; fi
 
-   if $in_break; then
-      total=$(hms $(( $total_working_time * 60 )) )
+   if "$in_break"; then
+      total="$(hms $(( $total_working_time * 60 )) )"
    else
-      total=$(hms $(( ($total_working_time + $work_length) * 60 - $left )))
+      total="$(hms $(( ($total_working_time + $work_length) * 60 - $left )))"
    fi
 
    echo -e "\rTotal working time: $total"
@@ -157,7 +160,7 @@ main() {
    # Loop through work and break cycles
    while true; do
       # Break period
-      if $DO_BREAK; then
+      if "$DO_BREAK"; then
          echo -e "Break. Total working time: $(hms $(( $total_working_time * 60 )))"
          in_break=true && do_options
          vsleep $(( $break_length * 60 ))
@@ -166,15 +169,15 @@ main() {
       # Work period
       echo -e "Period #$count. Total working time: $(hms $(( $total_working_time * 60 )))"
       in_break=false && do_options
-      vsleep $(( $work_length * 60 ))
+      vsleep "$(( $work_length * 60 ))"
 
       # Calculate totals
-      total_working_time=$(( ($total_working_time + $work_length) ))
-      count=$(( $count + 1 ))
+      total_working_time="$(( ($total_working_time + $work_length) ))"
+      count="$(( $count + 1 ))"
    done
 }
 
-if [ ! $DEBUG ]; then
+if [ ! "$DEBUG" ]; then
    trap ctrl_c INT TERM
    main
 fi
