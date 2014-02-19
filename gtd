@@ -19,12 +19,12 @@ SPEAK_BREAK="${SPEAK_BREAK:-"$NOTIFY_BREAK"}"
 CFG_FILE="${CFG_FILE:-$HOME/.gtdrc}"
 
 # Flag configuration
-DO_BREAK="${DO_BREAK:-false}"
-DO_CUSTOM="${DO_CUSTOM:-false}"
-DO_MPD="${DO_MPD:-false}"
-DO_NOTIFY="${DO_NOTIFY:-false}"
-DO_SPEAK="${DO_SPEAK:-false}"
-DO_TMUX="${DO_TMUX:-false}"
+DO_BREAK="${DO_BREAK:-}"
+DO_CUSTOM="${DO_CUSTOM:-}"
+DO_MPD="${DO_MPD:-}"
+DO_NOTIFY="${DO_NOTIFY:-}"
+DO_SPEAK="${DO_SPEAK:-}"
+DO_TMUX="${DO_TMUX:-}"
 
 # Display help
 usage() {
@@ -48,13 +48,13 @@ EOF
 
 # Set flag options
 while getopts "bcmnsthf:?" opt; do
-   case $opt in
-      b) if "$DO_BREAK";  then DO_BREAK=false;  else DO_BREAK=true;  fi;;
-      c) if "$DO_CUSTOM"; then DO_CUSTOM=false; else DO_CUSTOM=true; fi;;
-      m) if "$DO_MPD";    then DO_MPD=false;    else DO_MPD=true;    fi;;
-      n) if "$DO_NOTIFY"; then DO_NOTIFY=false; else DO_NOTIFY=true; fi;;
-      s) if "$DO_SPEAK";  then DO_SPEAK=false;  else DO_SPEAK=true;  fi;;
-      t) if "$DO_TMUX";   then DO_TMUX=false;   else DO_TMUX=true;   fi;;
+   case "$opt" in
+      b) [[ -n "$DO_BREAK"  ]] && unset DO_BREAK  || DO_BREAK=true;;
+      c) [[ -n "$DO_CUSTOM" ]] && unset DO_CUSTOM || DO_CUSTOM=true;;
+      m) [[ -n "$DO_MPD"    ]] && unset DO_MPD    || DO_MPD=true;;
+      n) [[ -n "$DO_NOTIFY" ]] && unset DO_NOTIFY || DO_NOTIFY=true;;
+      s) [[ -n "$DO_SPEAK"  ]] && unset DO_SPEAK  || DO_SPEAK=true;;
+      t) [[ -n "$DO_TMUX"   ]] && unset DO_TMUX   || DO_TMUX=true;;
       f) CFG_FILE="$OPTARG";;
       *) usage; exit 1;;
    esac
@@ -84,7 +84,7 @@ else
 fi
 
 # Show usage for three arguments or more
-if [ -n "$3" ]; then usage && exit 1; fi
+[[ -n "$3" ]] && (usage && exit 1)
 
 # Collect session statistics
 total_working_time=0
@@ -102,7 +102,7 @@ hms() {
 # Displays a countdown using hms() while sleeping ("visual" sleep)
 vsleep() {
    left="$1"
-   while [ "$left" -gt 0 ]; do
+   while [[ "$left" -gt 0 ]]; do
       hms="$(hms $left)"
 
       # Updates a temporary file for tmux to read from and refreshes the client
@@ -112,7 +112,7 @@ vsleep() {
       fi
 
       # Prints time information to terminal title bar
-      if "$in_break"; then
+      if [[ -n "$in_break" ]]; then
          printf "\e]1;(brk) $hms\a"
       else
          printf "\e]1;(gtd) $hms\a"
@@ -126,20 +126,33 @@ vsleep() {
 
 # Do various tasks based on the user-specified flags
 do_options() {
-   if "$DO_CUSTOM"; then eval "$CUSTOM_CMD"; fi
-   if "$DO_NOTIFY" && "$in_break"; then eval "$NOTIFY_CMD $NOTIFY_BREAK";
-   elif "$DO_NOTIFY"; then eval "$NOTIFY_CMD $NOTIFY_WORK"; fi
-   if "$DO_SPEAK" && "$in_break"; then eval "$SPEAK_CMD $SPEAK_BREAK";
-   elif "$DO_SPEAK"; then eval "$SPEAK_CMD $SPEAK_WORK"; fi
-   if "$DO_MPD"; then (sleep 1 && eval "$MPD_CMD"); fi
+   [[ -n "$DO_CUSTOM" ]] && eval "$CUSTOM_CMD"
+
+   if [[ -n "$DO_NOTIFY" ]]; then
+      if [[ -n "$in_break" ]]; then
+         eval "$NOTIFY_CMD $NOTIFY_BREAK"
+      else
+         eval "$NOTIFY_CMD $NOTIFY_WORK"
+      fi
+   fi
+
+   if [[ -n "$DO_SPEAK" ]]; then
+      if [[ -n "$in_break" ]]; then
+         eval "$SPEAK_CMD $SPEAK_BREAK"
+      else
+         eval "$SPEAK_CMD $SPEAK_WORK"
+      fi
+   fi
+
+   [[ -n "$DO_MPD" ]] && (sleep 1 && eval "$MPD_CMD")
 }
 
 # Handle CTRL-C interrupt
 ctrl_c() {
    # Clear the temporary file and refresh tmux when interrupted/terminated
-   if "$DO_TMUX"; then tmux refresh-client -S && rm /tmp/gtd; fi
+   [[ -n "$DO_TMUX" ]] && (tmux refresh-client -S && rm /tmp/gtd)
 
-   if "$in_break"; then
+   if [[ -n "$in_break" ]]; then
       total="$(hms $(( $total_working_time * 60 )) )"
    else
       total="$(hms $(( ($total_working_time + $work_length) * 60 - $left )))"
@@ -160,7 +173,7 @@ main() {
    # Loop through work and break cycles
    while true; do
       # Break period
-      if "$DO_BREAK"; then
+      if [[ -n "$DO_BREAK" ]]; then
          echo -e "Break. Total working time: $(hms $(( $total_working_time * 60 )))"
          in_break=true && do_options
          vsleep $(( $break_length * 60 ))
@@ -168,7 +181,7 @@ main() {
 
       # Work period
       echo -e "Period #$count. Total working time: $(hms $(( $total_working_time * 60 )))"
-      in_break=false && do_options
+      unset in_break && do_options
       vsleep "$(( $work_length * 60 ))"
 
       # Calculate totals
@@ -177,7 +190,7 @@ main() {
    done
 }
 
-if [ ! "$DEBUG" ]; then
+if [[ ! "$DEBUG" ]]; then
    trap ctrl_c INT TERM
    main
 fi

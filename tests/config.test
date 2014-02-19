@@ -11,12 +11,12 @@ assert "$f NOTIFY_WORK:"         "$NOTIFY_WORK"         = "\"Get things done.\""
 assert "$f NOTIFY_BREAK:"        "$NOTIFY_BREAK"        = "\"Take a break.\""
 assert "$f SPEAK_WORK:"          "$SPEAK_WORK"          = "\"Get things done.\""
 assert "$f SPEAK_BREAK:"         "$SPEAK_BREAK"         = "\"Take a break.\""
-assert "$f DO_BREAK:"            "$DO_BREAK"            = "false"
-assert "$f DO_CUSTOM:"           "$DO_CUSTOM"           = "false"
-assert "$f DO_MPD:"              "$DO_MPD"              = "false"
-assert "$f DO_NOTIFY:"           "$DO_NOTIFY"           = "false"
-assert "$f DO_SPEAK:"            "$DO_SPEAK"            = "false"
-assert "$f DO_TMUX:"             "$DO_TMUX"             = "false"
+assert "$f DO_BREAK:"            "-z" "$DO_BREAK"
+assert "$f DO_CUSTOM:"           "-z" "$DO_CUSTOM"
+assert "$f DO_MPD:"              "-z" "$DO_MPD"
+assert "$f DO_NOTIFY:"           "-z" "$DO_NOTIFY"
+assert "$f DO_SPEAK:"            "-z" "$DO_SPEAK"
+assert "$f DO_TMUX:"             "-z" "$DO_TMUX"
 
 # Configuration should allow overwrites {{{1
 
@@ -58,12 +58,12 @@ assert "$f Overwrite DO_TMUX:"             "$DO_TMUX"             = true
 
 source "$MAIN" -bcmnst
 
-assert "$f Toggle DO_BREAK:"            "$DO_BREAK"            = false
-assert "$f Toggle DO_CUSTOM:"           "$DO_CUSTOM"           = false
-assert "$f Toggle DO_MPD:"              "$DO_MPD"              = false
-assert "$f Toggle DO_NOTIFY:"           "$DO_NOTIFY"           = false
-assert "$f Toggle DO_SPEAK:"            "$DO_SPEAK"            = false
-assert "$f Toggle DO_TMUX:"             "$DO_TMUX"             = false
+assert "$f Toggle DO_BREAK:"  "-z" "$DO_BREAK"
+assert "$f Toggle DO_CUSTOM:" "-z" "$DO_CUSTOM"
+assert "$f Toggle DO_MPD:"    "-z" "$DO_MPD"
+assert "$f Toggle DO_NOTIFY:" "-z" "$DO_NOTIFY"
+assert "$f Toggle DO_SPEAK:"  "-z" "$DO_SPEAK"
+assert "$f Toggle DO_TMUX:"   "-z" "$DO_TMUX"
 
 # Configuration file {{{1
 echo "CUSTOM_CMD=\"cfg_file\"" > ~/.gtdrc
