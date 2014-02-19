@@ -42,12 +42,13 @@ The script is easily modifiable to use custom programs or commands if you'd rath
     SPEAK_WORK="$NOTIFY_WORK"
     SPEAK_BREAK="$NOTIFY_BREAK"
 
-    DO_BREAK=false
-    DO_CUSTOM_CMD=false
-    DO_MPD=false
-    DO_NOTIFY=false
-    DO_SPEAK=false
-    DO_TMUX=false
+    # Set these to "true" to change the default
+    DO_BREAK=
+    DO_CUSTOM_CMD=
+    DO_MPD=
+    DO_NOTIFY=
+    DO_SPEAK=
+    DO_TMUX=
 
 ## MIT License
 
