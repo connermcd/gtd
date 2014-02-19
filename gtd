@@ -38,8 +38,14 @@ OPTIONS:
 EOF
 }
 
+# Show an error message and print usage
+error() {
+   echo -e "\033[0;31m$1\033[0m"
+   usage && exit 1
+}
+
 # Set flag options
-while getopts "bcmnsthf:?" opt; do
+while getopts "bcmnstf:h" opt; do
    case "$opt" in
       b) [[ -n "$DO_BREAK"  ]] && unset DO_BREAK  || DO_BREAK=true;;
       c) [[ -n "$DO_CUSTOM" ]] && unset DO_CUSTOM || DO_CUSTOM=true;;
@@ -48,9 +54,10 @@ while getopts "bcmnsthf:?" opt; do
       s) [[ -n "$DO_SPEAK"  ]] && unset DO_SPEAK  || DO_SPEAK=true;;
       t) [[ -n "$DO_TMUX"   ]] && unset DO_TMUX   || DO_TMUX=true;;
       f) CFG_FILE="$OPTARG";;
-      *) usage; exit 1;;
+      h) usage && exit 0;;
+      *) error "Invalid flag.";;
    esac
-done
+done 2>/dev/null
 shift "$((OPTIND-1))"
 
 if [[ -e "$CFG_FILE" ]]; then
@@ -61,7 +68,7 @@ fi
 if [[ -z "$1" ]]; then
    work_length="$DEFAULT_WORK_LENGTH"
 elif [[ "$1" =~ [^0-9] ]]; then
-   usage && exit 1
+   error "Work length must be a number of minutes."
 else
    work_length="$1"
 fi
@@ -70,13 +77,13 @@ fi
 if [[ -z "$2" ]]; then
    break_length="$(( $work_length / 5 ))"
 elif [[ "$2" =~ [^0-9] ]]; then
-   usage && exit 1
+   error "Break length must be a number of minutes."
 else
    break_length="$2"
 fi
 
-# Show usage for three arguments or more
-[[ -n "$3" ]] && (usage && exit 1)
+# Show error message for three arguments or more
+[[ -n "$3" ]] && error "Only two arguments are allowed."
 
 # Collect session statistics
 total_working_time=0

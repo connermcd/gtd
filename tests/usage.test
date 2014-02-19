@@ -2,18 +2,19 @@
 
 source "$MAIN"
 
-assert "$f -?:" "$(source "$MAIN" -?)" = "$(usage)"
 assert "$f -h:" "$(source "$MAIN" -h)" = "$(usage)"
+assert "$f -?:" "$(source "$MAIN" -?)" = "$(error "Invalid flag.")"
+assert "$f -y:" "$(source "$MAIN" -y)" = "$(error "Invalid flag.")"
 
 # Usage should be printed for inappropriate arguments {{{1
 
-assert "$f ?:"    "$(source "$MAIN" ?)"      = "$(usage)"
-assert "$f help:" "$(source "$MAIN" help)"   = "$(usage)"
-assert "$f 5m:"   "$(source "$MAIN" "5m")"   = "$(usage)"
-assert "$f 5 m:"  "$(source "$MAIN" 5 m)"    = "$(usage)"
+assert "$f ?:"    "$(source "$MAIN" ?)"      = "$(error "Work length must be a number of minutes.")"
+assert "$f help:" "$(source "$MAIN" help)"   = "$(error "Work length must be a number of minutes.")"
+assert "$f 5m:"   "$(source "$MAIN" "5m")"   = "$(error "Work length must be a number of minutes.")"
+assert "$f 5 m:"  "$(source "$MAIN" 5 m)"    = "$(error "Break length must be a number of minutes.")"
 
 # Usage should be printed for too many arguments {{{1
 
-assert "$f 1 2 3:"  "$(source "$MAIN" 1 2 3)"    = "$(usage)"
+assert "$f 1 2 3:"  "$(source "$MAIN" 1 2 3)"    = "$(error "Only two arguments are allowed.")"
 
 # vim: ft=sh
