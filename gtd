@@ -18,14 +18,6 @@ SPEAK_BREAK="${SPEAK_BREAK:-"$NOTIFY_BREAK"}"
 # File configuration
 CFG_FILE="${CFG_FILE:-$HOME/.gtdrc}"
 
-# Flag configuration
-DO_BREAK="${DO_BREAK:-}"
-DO_CUSTOM="${DO_CUSTOM:-}"
-DO_MPD="${DO_MPD:-}"
-DO_NOTIFY="${DO_NOTIFY:-}"
-DO_SPEAK="${DO_SPEAK:-}"
-DO_TMUX="${DO_TMUX:-}"
-
 # Display help
 usage() {
 cat << EOF
