@@ -62,16 +62,21 @@ while getopts "bcmnstf:e:h" opt; do
 done 2>/dev/null
 shift "$((OPTIND-1))"
 
+# Check for configuration file and source it
 if [[ -e "$CFG_FILE" ]]; then
    source "$CFG_FILE"
 fi
 
+# Make sure tmux is installed if it is required
 if [[ -n "$DO_TMUX" ]]; then
    which tmux &>/dev/null || error "This feature requires \`tmux\` to be installed."
 fi
 
 if [[ -n "$END_TIME" ]]; then
+   # Make sure at is installed if it is required
    which at &>/dev/null || error "This feature requires \`at\` to be installed."
+
+   # Kill this process at $END_TIME
    at "$END_TIME" <<<"kill $$"
 fi
 
@@ -128,6 +133,7 @@ vsleep() {
          printf "\e]1;(gtd) $hms\a"
       fi
 
+      # Print the countdown to the terminal and decrement one second
       echo -e "$hms $(tput el)\r\c"
       sleep 1
       left="$(( $left - 1 ))"
