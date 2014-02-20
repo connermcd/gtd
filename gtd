@@ -64,6 +64,10 @@ if [[ -e "$CFG_FILE" ]]; then
    source "$CFG_FILE"
 fi
 
+if [[ -n "$DO_TMUX" ]]; then
+   which tmux &>/dev/null || error "This feature requires tmux to be installed."
+fi
+
 # Set work length if specified and is a number
 if [[ -z "$1" ]]; then
    work_length="$DEFAULT_WORK_LENGTH"
