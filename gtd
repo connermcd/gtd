@@ -109,7 +109,7 @@ vsleep() {
       hms="$(hms $left)"
 
       # Updates a temporary file for tmux to read from and refreshes the client
-      if $DO_TMUX; then
+      if [[ -n "$DO_TMUX" ]]; then
          (echo -ne "$hms |" > /tmp/gtd)
          (tmux refresh-client -S)
       fi
@@ -123,7 +123,7 @@ vsleep() {
 
       echo -e "$hms $(tput el)\r\c"
       sleep 1
-      left=$(( $left - 1 ))
+      left="$(( $left - 1 ))"
    done
 }
 
@@ -197,7 +197,7 @@ main() {
    done
 }
 
-if [[ ! "$DEBUG" ]]; then
+if [[ -z "$DEBUG" ]]; then
    trap ctrl_c INT TERM
    trap finish EXIT
    main
