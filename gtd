@@ -171,6 +171,8 @@ ctrl_c() {
 cleanup() {
    # Clear the temporary file and refresh tmux when interrupted/terminated
    [[ -n "$DO_TMUX" ]] && (tmux refresh-client -S && rm /tmp/gtd)
+
+   exit 0
 }
 
 main() {
@@ -199,6 +201,6 @@ main() {
 
 if [[ -z "$DEBUG" ]]; then
    trap ctrl_c INT TERM
-   trap finish EXIT
+   trap cleanup EXIT
    main
 fi
