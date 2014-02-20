@@ -1,0 +1,15 @@
+# Functions should exit cleanly {{{1
+
+source "$MAIN"
+left=0
+
+assert "$f usage"       "0" "=" "$((usage &>/dev/null); echo $?)"
+assert "$f hms 0"       "0" "=" "$((hms 0 &>/dev/null); echo $?)"
+assert "$f vsleep 0"    "0" "=" "$((vsleep 0 &>/dev/null); echo $?)"
+assert "$f do_options"  "0" "=" "$((do_options &>/dev/null); echo $?)"
+assert "$f ctrl_c"      "0" "=" "$((ctrl_c &>/dev/null); echo $?)"
+assert "$f cleanup"     "0" "=" "$((cleanup &>/dev/null); echo $?)"
+
+assert "$f error"       "1" "=" "$((error &>/dev/null); echo $?)"
+
+# vim: ft=sh
