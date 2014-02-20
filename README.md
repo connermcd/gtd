@@ -9,6 +9,7 @@
     -n : notify on change
     -s : speak command
     -t : show time in tmux status bar
+    -e : specify time to end at (e.g. 2:45pm today)
     -f : specify a configuration file
 
 ## Usage
@@ -28,6 +29,12 @@ If you don't specify a break length, the script automatically determines how lon
 The `-c`, `-m`, `-n`, `-s` and `-t` flags use commands. The `-m` flag uses `mpc toggle` to toggle your mpd client and the `-n` flag uses libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes. The `-c` flag uses a custom command, which is `clear` by default. The `-t` flag refreshes tmux and updates `/tmp/gtd` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
 
     set-option -g status-right "#(cat /tmp/gtd)#[fg=colour15,noreverse,bg=colour233] #(date '+%a %m/%d %I:%M %P') "
+
+If you have the `at` command you can use its syntax to specify an end time with the `-e` flag. For example:
+
+    gtd -e "10:45pm today"
+
+This will stop the script at 10:45pm today. See `man at` for more syntax options.
 
 The script is easily modifiable to use custom programs or commands if you'd rather not use the defaults. The one exception to this is the `tmux` integration. For the others, simply set the appropriate variable when starting or in the file `~/.gtdrc`. You can use the `-f` flag if you'd like to use a different file. The configurable variables are provided below. If you use a flag after setting a boolean variable to true it will toggle it, turning it off.
 
