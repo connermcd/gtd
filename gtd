@@ -154,9 +154,6 @@ do_options() {
 
 # Handle CTRL-C interrupt
 ctrl_c() {
-   # Clear the temporary file and refresh tmux when interrupted/terminated
-   [[ -n "$DO_TMUX" ]] && (tmux refresh-client -S && rm /tmp/gtd)
-
    if [[ -n "$in_break" ]]; then
       total="$(hms $(( $total_working_time * 60 )) )"
    else
@@ -169,6 +166,11 @@ ctrl_c() {
    printf "\e]1;(tot) $total\a"
 
    exit 0
+}
+
+cleanup() {
+   # Clear the temporary file and refresh tmux when interrupted/terminated
+   [[ -n "$DO_TMUX" ]] && (tmux refresh-client -S && rm /tmp/gtd)
 }
 
 main() {
@@ -197,5 +199,6 @@ main() {
 
 if [[ ! "$DEBUG" ]]; then
    trap ctrl_c INT TERM
+   trap finish EXIT
    main
 fi
