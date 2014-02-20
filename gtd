@@ -183,7 +183,7 @@ main() {
       if [[ -n "$DO_BREAK" ]]; then
          echo -e "Break. Total working time: $(hms $(( $total_working_time * 60 )))"
          in_break=true && do_options
-         vsleep $(( $break_length * 60 ))
+         vsleep "$(( $break_length * 60 ))"
       else DO_BREAK=true; fi
 
       # Work period

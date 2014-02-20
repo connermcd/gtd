@@ -9,7 +9,7 @@ assert "$f create /tmp/gtd" "-e" "/tmp/gtd"
 
 # The /tmp/gtd file should be deleted on exit {{{2
 
-(ctrl_c >/dev/null)
+(cleanup >/dev/null)
 assert "$f remove /tmp/gtd" "!" "-e" "/tmp/gtd"
 
 # vim: ft=sh
