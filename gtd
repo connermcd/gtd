@@ -144,6 +144,8 @@ do_options() {
    fi
 
    [[ -n "$DO_MPD" ]] && (sleep 1 && eval "$MPD_CMD")
+
+   return 0
 }
 
 # Handle CTRL-C interrupt
