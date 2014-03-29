@@ -66,7 +66,7 @@ assert "$f Toggle DO_SPEAK:"  "-z" "$DO_SPEAK"
 assert "$f Toggle DO_TMUX:"   "-z" "$DO_TMUX"
 
 # Configuration file {{{1
-echo "CUSTOM_CMD=\"cfg_file\"" > ~/.gtdrc
+echo "CUSTOM_CMD=\"cfg_file\"" >> ~/.gtdrc
 echo "CUSTOM_CMD=\"custom_cfg\"" > /tmp/custom_cfg
 
 # Should read from ~/.gtdrc if exists {{{2
@@ -78,7 +78,7 @@ source "$MAIN" -f /tmp/custom_cfg
 assert "$f Read from specified file:" "$CUSTOM_CMD" = "custom_cfg"
 
 rm /tmp/custom_cfg
-rm ~/.gtdrc
+sed -i '$d' ~/.gtdrc
 unset CUSTOM_CMD
 
 # vim: ft=sh
