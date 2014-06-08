@@ -18,6 +18,11 @@ SPEAK_BREAK="${SPEAK_BREAK:-"$NOTIFY_BREAK"}"
 # File configuration
 CFG_FILE="${CFG_FILE:-$HOME/.gtdrc}"
 
+# Check for configuration file and source it
+if [[ -e "$CFG_FILE" ]]; then
+   source "$CFG_FILE"
+fi
+
 # Display help
 usage() {
 cat << EOF
@@ -61,11 +66,6 @@ while getopts "bcmnstf:e:h" opt; do
    esac
 done 2>/dev/null
 shift "$((OPTIND-1))"
-
-# Check for configuration file and source it
-if [[ -e "$CFG_FILE" ]]; then
-   source "$CFG_FILE"
-fi
 
 # Make sure tmux is installed if it is required
 if [[ -n "$DO_TMUX" ]]; then
