@@ -1,4 +1,6 @@
-mv ~/.gtdrc /tmp/old_gtdrc
+if [[ -e ~/.gtdrc ]]; then
+   mv ~/.gtdrc /tmp/old_gtdrc
+fi
 
 # Configuration should be set {{{1
 
@@ -69,18 +71,22 @@ assert "$f Toggle DO_TMUX:"   "-z" "$DO_TMUX"
 
 # Configuration file {{{1
 echo "CUSTOM_CMD=\"cfg_file\"" > ~/.gtdrc
-echo "CUSTOM_CMD=\"custom_cfg\"" > /tmp/custom_cfg
+# echo "CUSTOM_CMD=\"custom_cfg\"" > /tmp/custom_cfg
 
 # Should read from ~/.gtdrc if exists {{{2
 source "$MAIN"
 assert "$f Read from ~/.gtdrc:" "$CUSTOM_CMD" = "cfg_file"
 
 # Should read from other file if specified {{{2
-source "$MAIN" -f /tmp/custom_cfg
-assert "$f Read from specified file:" "$CUSTOM_CMD" = "custom_cfg"
+# source "$MAIN" -f /tmp/custom_cfg
+# assert "$f Read from specified file:" "$CUSTOM_CMD" = "custom_cfg"
 
 unset CUSTOM_CMD
-rm /tmp/custom_cfg
-mv /tmp/old_gtdrc ~/.gtdrc
+# rm /tmp/custom_cfg
+if [[ -e /tmp/old_gtdrc ]]; then
+   mv /tmp/old_gtdrc ~/.gtdrc
+else
+   rm ~/.gtdrc
+fi
 
 # vim: ft=sh

@@ -39,7 +39,6 @@ OPTIONS:
    -s : speak command
    -t : show time in tmux status bar
    -e : specify time to end at (e.g. 2:45pm today)
-   -f : specify a configuration file
 
 EOF
 }
@@ -51,7 +50,7 @@ error() {
 }
 
 # Set flag options
-while getopts "bcmnstf:e:h" opt; do
+while getopts "bcmnste:h" opt; do
    case "$opt" in
       b) [[ -n "$DO_BREAK"  ]] && unset DO_BREAK  || DO_BREAK=true;;
       c) [[ -n "$DO_CUSTOM" ]] && unset DO_CUSTOM || DO_CUSTOM=true;;
@@ -59,7 +58,6 @@ while getopts "bcmnstf:e:h" opt; do
       n) [[ -n "$DO_NOTIFY" ]] && unset DO_NOTIFY || DO_NOTIFY=true;;
       s) [[ -n "$DO_SPEAK"  ]] && unset DO_SPEAK  || DO_SPEAK=true;;
       t) [[ -n "$DO_TMUX"   ]] && unset DO_TMUX   || DO_TMUX=true;;
-      f) CFG_FILE="$OPTARG";;
       e) END_TIME="$OPTARG";;
       h) usage && exit 0;;
       *) error "Invalid flag.";;
