@@ -22,9 +22,17 @@ assert() {
 
 echo -e "Running tests...\n"
 
+if [[ -e ~/.gtdrc ]]; then
+   mv ~/.gtdrc /tmp/old_gtdrc
+fi
+
 for file in "$(dirname $MAIN)/tests/"*.test; do
    DEBUG=true f="$(basename $file) =>" source "$file"
 done
+
+if [[ -e /tmp/old_gtdrc ]]; then
+   mv /tmp/old_gtdrc ~/.gtdrc
+fi
 
 echo -e "\n${RED}${errors}${RESET_COLOR}"
 echo -e "Done. $pass_cnt passed. $fail_cnt failed."

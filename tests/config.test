@@ -1,7 +1,3 @@
-if [[ -e ~/.gtdrc ]]; then
-   mv ~/.gtdrc /tmp/old_gtdrc
-fi
-
 # Configuration should be set {{{1
 
 source "$MAIN"
@@ -81,12 +77,8 @@ assert "$f Read from ~/.gtdrc:" "$CUSTOM_CMD" = "cfg_file"
 # source "$MAIN" -f /tmp/custom_cfg
 # assert "$f Read from specified file:" "$CUSTOM_CMD" = "custom_cfg"
 
+# cleanup
 unset CUSTOM_CMD
-# rm /tmp/custom_cfg
-if [[ -e /tmp/old_gtdrc ]]; then
-   mv /tmp/old_gtdrc ~/.gtdrc
-else
-   rm ~/.gtdrc
-fi
+rm ~/.gtdrc
 
 # vim: ft=sh
