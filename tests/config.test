@@ -2,21 +2,22 @@
 
 source "$MAIN"
 
-assert "$f CUSTOM_CMD:"          "$CUSTOM_CMD"          = "clear"
-assert "$f MPD_CMD:"             "$MPD_CMD"             = "mpc -q toggle"
-assert "$f NOTIFY_CMD:"          "$NOTIFY_CMD"          = "notify-send"
-assert "$f SPEAK_CMD:"           "$SPEAK_CMD"           = "&>/dev/null espeak"
-assert "$f DEFAULT_WORK_LENGTH:" "$DEFAULT_WORK_LENGTH" = "15"
-assert "$f NOTIFY_WORK:"         "$NOTIFY_WORK"         = "\"Get things done.\""
-assert "$f NOTIFY_BREAK:"        "$NOTIFY_BREAK"        = "\"Take a break.\""
-assert "$f SPEAK_WORK:"          "$SPEAK_WORK"          = "\"Get things done.\""
-assert "$f SPEAK_BREAK:"         "$SPEAK_BREAK"         = "\"Take a break.\""
-assert "$f DO_BREAK:"            "-z" "$DO_BREAK"
-assert "$f DO_CUSTOM:"           "-z" "$DO_CUSTOM"
-assert "$f DO_MPD:"              "-z" "$DO_MPD"
-assert "$f DO_NOTIFY:"           "-z" "$DO_NOTIFY"
-assert "$f DO_SPEAK:"            "-z" "$DO_SPEAK"
-assert "$f DO_TMUX:"             "-z" "$DO_TMUX"
+assert "$f CUSTOM_CMD:"           "$CUSTOM_CMD"           = "clear"
+assert "$f MPD_CMD:"              "$MPD_CMD"              = "mpc -q toggle"
+assert "$f NOTIFY_CMD:"           "$NOTIFY_CMD"           = "notify-send"
+assert "$f SPEAK_CMD:"            "$SPEAK_CMD"            = "&>/dev/null espeak"
+assert "$f DEFAULT_WORK_LENGTH:"  "$DEFAULT_WORK_LENGTH"  = "15"
+assert "$f DEFAULT_BREAK_LENGTH:" "$DEFAULT_BREAK_LENGTH" = ""
+assert "$f NOTIFY_WORK:"          "$NOTIFY_WORK"          = "\"Get things done.\""
+assert "$f NOTIFY_BREAK:"         "$NOTIFY_BREAK"         = "\"Take a break.\""
+assert "$f SPEAK_WORK:"           "$SPEAK_WORK"           = "\"Get things done.\""
+assert "$f SPEAK_BREAK:"          "$SPEAK_BREAK"          = "\"Take a break.\""
+assert "$f DO_BREAK:"             "-z" "$DO_BREAK"
+assert "$f DO_CUSTOM:"            "-z" "$DO_CUSTOM"
+assert "$f DO_MPD:"               "-z" "$DO_MPD"
+assert "$f DO_NOTIFY:"            "-z" "$DO_NOTIFY"
+assert "$f DO_SPEAK:"             "-z" "$DO_SPEAK"
+assert "$f DO_TMUX:"              "-z" "$DO_TMUX"
 
 # Configuration should allow overwrites {{{1
 
@@ -25,6 +26,7 @@ MPD_CMD=blah
 NOTIFY_CMD=blah
 SPEAK_CMD=blah
 DEFAULT_WORK_LENGTH=1
+DEFAULT_BREAK_LENGTH=1
 NOTIFY_WORK=blah
 NOTIFY_BREAK=blah
 SPEAK_WORK=blah
@@ -38,21 +40,22 @@ DO_TMUX=true
 
 source "$MAIN"
 
-assert "$f Overwrite CUSTOM_CMD:"          "$CUSTOM_CMD"          = "blah"
-assert "$f Overwrite MPD_CMD:"             "$MPD_CMD"             = "blah"
-assert "$f Overwrite NOTIFY_CMD:"          "$NOTIFY_CMD"          = "blah"
-assert "$f Overwrite SPEAK_CMD:"           "$SPEAK_CMD"           = "blah"
-assert "$f Overwrite DEFAULT_WORK_LENGTH:" "$DEFAULT_WORK_LENGTH" = "1"
-assert "$f Overwrite NOTIFY_WORK:"         "$NOTIFY_WORK"         = "blah"
-assert "$f Overwrite NOTIFY_BREAK:"        "$NOTIFY_BREAK"        = "blah"
-assert "$f Overwrite SPEAK_WORK:"          "$SPEAK_WORK"          = "blah"
-assert "$f Overwrite SPEAK_BREAK:"         "$SPEAK_BREAK"         = "blah"
-assert "$f Overwrite DO_BREAK:"            "$DO_BREAK"            = true
-assert "$f Overwrite DO_CUSTOM:"           "$DO_CUSTOM"           = true
-assert "$f Overwrite DO_MPD:"              "$DO_MPD"              = true
-assert "$f Overwrite DO_NOTIFY:"           "$DO_NOTIFY"           = true
-assert "$f Overwrite DO_SPEAK:"            "$DO_SPEAK"            = true
-assert "$f Overwrite DO_TMUX:"             "$DO_TMUX"             = true
+assert "$f Overwrite CUSTOM_CMD:"           "$CUSTOM_CMD"           = "blah"
+assert "$f Overwrite MPD_CMD:"              "$MPD_CMD"              = "blah"
+assert "$f Overwrite NOTIFY_CMD:"           "$NOTIFY_CMD"           = "blah"
+assert "$f Overwrite SPEAK_CMD:"            "$SPEAK_CMD"            = "blah"
+assert "$f Overwrite DEFAULT_WORK_LENGTH:"  "$DEFAULT_WORK_LENGTH"  = "1"
+assert "$f Overwrite DEFAULT_BREAK_LENGTH:" "$DEFAULT_BREAK_LENGTH" = "1"
+assert "$f Overwrite NOTIFY_WORK:"          "$NOTIFY_WORK"          = "blah"
+assert "$f Overwrite NOTIFY_BREAK:"         "$NOTIFY_BREAK"         = "blah"
+assert "$f Overwrite SPEAK_WORK:"           "$SPEAK_WORK"           = "blah"
+assert "$f Overwrite SPEAK_BREAK:"          "$SPEAK_BREAK"          = "blah"
+assert "$f Overwrite DO_BREAK:"             "$DO_BREAK"             = true
+assert "$f Overwrite DO_CUSTOM:"            "$DO_CUSTOM"            = true
+assert "$f Overwrite DO_MPD:"               "$DO_MPD"               = true
+assert "$f Overwrite DO_NOTIFY:"            "$DO_NOTIFY"            = true
+assert "$f Overwrite DO_SPEAK:"             "$DO_SPEAK"             = true
+assert "$f Overwrite DO_TMUX:"              "$DO_TMUX"              = true
 
 # Flags should toggle state {{{1
 
