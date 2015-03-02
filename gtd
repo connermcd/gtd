@@ -9,8 +9,8 @@ NOTIFY_CMD="${NOTIFY_CMD:-"notify-send"}"
 SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null espeak"}"
 
 # Setting configuration
-DEFAULT_WORK_LENGTH=${DEFAULT_WORK_LENGTH:-15}
-DEFAULT_BREAK_LENGTH=$DEFAULT_BREAK_LENGTH
+DEFAULT_WORK_LENGTH="${DEFAULT_WORK_LENGTH:-15}"
+DEFAULT_BREAK_LENGTH="${DEFAULT_BREAK_LENGTH}"
 NOTIFY_WORK="${NOTIFY_WORK:-"\"Get things done.\""}"
 NOTIFY_BREAK="${NOTIFY_BREAK:-"\"Take a break.\""}"
 SPEAK_WORK="${SPEAK_WORK:-"$NOTIFY_WORK"}"
@@ -90,11 +90,7 @@ fi
 
 # Set break length if specified and is a number
 if [[ -z "$2" ]]; then
-   if [[ -z "$DEFAULT_BREAK_LENGTH" ]]; then
-      break_length="$(( $work_length / 5 ))"
-   else
-      break_length="$DEFAULT_BREAK_LENGTH"
-   fi
+   break_length="${DEFAULT_BREAK_LENGTH:-$(( $work_length / 5 ))}"
 elif [[ "$2" =~ [^0-9] ]]; then
    error "Break length must be a number of minutes."
 else
