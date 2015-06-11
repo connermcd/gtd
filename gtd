@@ -5,6 +5,7 @@ set -e
 # Command configuration
 CUSTOM_CMD="${CUSTOM_CMD:-"clear"}"
 MPD_CMD="${MPD_CMD:-"mpc -q toggle"}"
+PIANOBAR_CMD="${PIANOBAR_CMD:-"echo -n 'p' > ~/.config/pianobar/ctl"}"
 NOTIFY_CMD="${NOTIFY_CMD:-"notify-send"}"
 SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null espeak"}"
 
@@ -36,6 +37,7 @@ OPTIONS:
    -b : start on a break
    -c : custom command (defaults to "clear")
    -m : toggle MPD on change
+   -p : toggle Pianobar on change
    -n : notify on change
    -s : speak command
    -t : show time in tmux status bar
@@ -51,12 +53,13 @@ error() {
 }
 
 # Set flag options
-while getopts "bcmnste:h" opt; do
+while getopts "bcmnpste:h" opt; do
    case "$opt" in
       b) [[ -n "$DO_BREAK"  ]] && unset DO_BREAK  || DO_BREAK=true;;
       c) [[ -n "$DO_CUSTOM" ]] && unset DO_CUSTOM || DO_CUSTOM=true;;
       m) [[ -n "$DO_MPD"    ]] && unset DO_MPD    || DO_MPD=true;;
       n) [[ -n "$DO_NOTIFY" ]] && unset DO_NOTIFY || DO_NOTIFY=true;;
+      p) [[ -n "$DO_PIANOBAR" ]] && unset DO_PIANOBAR || DO_PIANOBAR=true;;
       s) [[ -n "$DO_SPEAK"  ]] && unset DO_SPEAK  || DO_SPEAK=true;;
       t) [[ -n "$DO_TMUX"   ]] && unset DO_TMUX   || DO_TMUX=true;;
       e) END_TIME="$OPTARG";;
@@ -160,6 +163,7 @@ do_options() {
    fi
 
    [[ -n "$DO_MPD" ]] && (sleep 1 && eval "$MPD_CMD")
+   [[ -n "$DO_PIANOBAR" ]] && (sleep 1 && eval "$PIANOBAR_CMD")
 
    return 0
 }
