@@ -5,7 +5,7 @@ set -e
 # Command configuration
 CUSTOM_CMD="${CUSTOM_CMD:-"clear"}"
 MPD_CMD="${MPD_CMD:-"mpc -q toggle"}"
-PIANOBAR_CMD="${PIANOBAR_CMD:-"echo -n 'p' > ~/.config/pianobar/ctl"}"
+PIANOBAR_CMD="${PIANOBAR_CMD:-"echo -n 'p' > $HOME/.config/pianobar/ctl"}"
 NOTIFY_CMD="${NOTIFY_CMD:-"notify-send"}"
 SPEAK_CMD="${SPEAK_CMD:-"&>/dev/null espeak"}"
 
@@ -55,13 +55,13 @@ error() {
 # Set flag options
 while getopts "bcmnpste:h" opt; do
    case "$opt" in
-      b) [[ -n "$DO_BREAK"  ]] && unset DO_BREAK  || DO_BREAK=true;;
-      c) [[ -n "$DO_CUSTOM" ]] && unset DO_CUSTOM || DO_CUSTOM=true;;
-      m) [[ -n "$DO_MPD"    ]] && unset DO_MPD    || DO_MPD=true;;
-      n) [[ -n "$DO_NOTIFY" ]] && unset DO_NOTIFY || DO_NOTIFY=true;;
+      b) [[ -n "$DO_BREAK"    ]] && unset DO_BREAK    || DO_BREAK=true;;
+      c) [[ -n "$DO_CUSTOM"   ]] && unset DO_CUSTOM   || DO_CUSTOM=true;;
+      m) [[ -n "$DO_MPD"      ]] && unset DO_MPD      || DO_MPD=true;;
+      n) [[ -n "$DO_NOTIFY"   ]] && unset DO_NOTIFY   || DO_NOTIFY=true;;
       p) [[ -n "$DO_PIANOBAR" ]] && unset DO_PIANOBAR || DO_PIANOBAR=true;;
-      s) [[ -n "$DO_SPEAK"  ]] && unset DO_SPEAK  || DO_SPEAK=true;;
-      t) [[ -n "$DO_TMUX"   ]] && unset DO_TMUX   || DO_TMUX=true;;
+      s) [[ -n "$DO_SPEAK"    ]] && unset DO_SPEAK    || DO_SPEAK=true;;
+      t) [[ -n "$DO_TMUX"     ]] && unset DO_TMUX     || DO_TMUX=true;;
       e) END_TIME="$OPTARG";;
       h) usage && exit 0;;
       *) error "Invalid flag.";;
@@ -72,6 +72,34 @@ shift "$((OPTIND-1))"
 # Make sure tmux is installed if it is required
 if [[ -n "$DO_TMUX" ]]; then
    which tmux &>/dev/null || error "This feature requires \`tmux\` to be installed."
+fi
+
+if [[ -n "$DO_MPD" && -n "$DO_PIANOBAR" ]]; then
+   unset DO_PIANOBAR
+   echo "Unable to use both \`mpd\` and \`pianobar\`. Defaulting to \`mpd\`."
+fi
+
+# Make sure pianobar is installed and running if it is required
+if [[ -n "$DO_PIANOBAR" ]]; then
+   which pianobar &>/dev/null || error "This feature requires \`pianobar\` to be installed."
+
+   mkdir -p $HOME/.config/pianobar &>/dev/null
+   [[ -p "$HOME/.config/pianobar/ctl" ]] || mkfifo $HOME/.config/pianobar/ctl
+   [[ -p "$HOME/.config/pianobar/events" ]] || mkfifo $HOME/.config/pianobar/events
+
+   if [[ -z $(pidof pianobar) ]]; then
+      pianobar &
+      pianobar=$!
+      while true; do
+         if read event <$HOME/.config/pianobar/events; then
+            if [[ "$event" == "songstart" ]]; then
+               disown $pianobar
+               break
+            fi
+         fi
+      done
+      eval "$PIANOBAR_CMD"
+   fi
 fi
 
 if [[ -n "$END_TIME" ]]; then
@@ -187,6 +215,8 @@ ctrl_c() {
 cleanup() {
    # Clear the temporary file and refresh tmux when interrupted/terminated
    [[ -n "$DO_TMUX" ]] && (tmux refresh-client -S && rm /tmp/gtd)
+
+   [[ -n $pianobar ]] && kill $pianobar
 
    exit 0
 }
