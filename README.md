@@ -9,12 +9,13 @@
     -n : notify on change
     -s : speak command
     -t : show time in tmux status bar
+    -T : update time in /tmp file
     -e : specify time to end at (e.g. 2:45pm today)
     -f : specify a configuration file
 
 ## Usage
 
-    gtd [ -bcmnst ] [ work length ] [ break length ]
+    gtd [ -bcmnstTef ] [ work length ] [ break length ]
 
 Basically it loops infinitely between periods of work and breaks. For example...
 
@@ -26,9 +27,11 @@ If you don't specify a break length, the script automatically determines how lon
 
 ## Configuration
 
-The `-c`, `-m`, `-n`, `-s` and `-t` flags use commands. The `-m` flag uses `mpc toggle` to toggle your mpd client and the `-n` flag uses libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes. The `-c` flag uses a custom command, which is `clear` by default. The `-t` flag refreshes tmux and updates `/tmp/gtd` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
+The `-c`, `-m`, `-n`, `-s` and `-t` flags use commands. The `-m` flag uses `mpc toggle` to toggle your mpd client and the `-n` flag uses libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes. The `-c` flag uses a custom command, which is `clear` by default. The `-t` flag refreshes tmux and updates `/tmp/gtd-tmux` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
 
-    set-option -g status-right "#(cat /tmp/gtd)#[fg=colour15,noreverse,bg=colour233] #(date '+%a %m/%d %I:%M %P') "
+    set-option -g status-right "#(cat /tmp/gtd-tmux)#[fg=colour15,noreverse,bg=colour233] #(date '+%a %m/%d %I:%M %P') "
+
+If you'd rather control a temporary file without the use of tmux you can use the `-T` flag which simply updates the time in `/tmp/gtd`.
 
 If you have the `at` command you can use its syntax to specify an end time with the `-e` flag. For example:
 
@@ -51,11 +54,12 @@ The script is easily modifiable to use custom programs or commands if you'd rath
 
     # Set these to "true" to change the default
     DO_BREAK=
-    DO_CUSTOM_CMD=
+    DO_CUSTOM=
     DO_MPD=
     DO_NOTIFY=
     DO_SPEAK=
     DO_TMUX=
+    DO_TMP_FILE=
 
 ## MIT License
 
