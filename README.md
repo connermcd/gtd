@@ -29,7 +29,7 @@ If you don't specify a break length, the script automatically determines how lon
 
 The `-c`, `-m`, `-n`, `-s` and `-t` flags use commands. The `-m` flag uses `mpc toggle` to toggle your mpd client and the `-n` flag uses libnotify to notify when the period ends. The `-s` flag enables `espeak` to speak to you when the period changes. The `-c` flag uses a custom command, which is `clear` by default. The `-t` flag refreshes tmux and updates `/tmp/gtd-tmux` with the time status so that it can be read by tmux. Just read the file somewhere in your `tmux.conf` status bar configuration somewhere. For example:
 
-    set-option -g status-right "#(cat /tmp/gtd-tmux)#[fg=colour15,noreverse,bg=colour233] #(date '+%a %m/%d %I:%M %P') "
+    set-option -g status-right "#(cat /tmp/gtd-tmux) %a %m/%d %I:%M %P"
 
 If you'd rather control a temporary file without the use of tmux you can use the `-T` flag which simply updates the time in `/tmp/gtd`.
 
