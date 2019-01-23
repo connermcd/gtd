@@ -39,7 +39,7 @@ OPTIONS:
    -n : notify on change
    -s : speak command
    -t : show time in tmux status bar
-   -T : show time in tmux status bar
+   -T : update time in /tmp file
    -e : specify time to end at (e.g. 2:45pm today)
 
 EOF
