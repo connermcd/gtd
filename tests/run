@@ -30,7 +30,7 @@ for file in "$(dirname $MAIN)/tests/"*.test; do
    DEBUG=true f="$(basename $file) =>" source "$file"
 done
 
-if [[ -e /tmp/old_gtdrc ]]; then
+if [[ -e /tmp/old_gtdrc || -h /tmp/old_gtdrc ]]; then
    mv /tmp/old_gtdrc ~/.gtdrc
 fi
 
